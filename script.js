@@ -5,7 +5,46 @@
 
 document.addEventListener('DOMContentLoaded', () => {
 
-  // ── 1. INTERACTIVE DELTA TRANSFER SIMULATOR ──
+  // ── 1. APP SHOWCASE SCREEN SWITCHER (Interactive Desktop Mockup) ──
+  const sidebarButtons = document.querySelectorAll('.preview-sidebar .sidebar-item');
+  const previewScreens = document.querySelectorAll('.preview-screen');
+  const previewCrumbs = document.getElementById('previewCrumbs');
+
+  const crumbTitles = {
+    'setup': 'Workspace › Folder Setup',
+    'results': 'Workspace › Scan Differences (4 Items)',
+    'queue': 'Workspace › Active Sync Queue (16 Threads)',
+    'dashboard': 'Workspace › Health & Analytics Dashboard',
+    'history': 'Workspace › Audit & Sync History',
+    'settings': 'Workspace › Engine Preferences & Rules'
+  };
+
+  sidebarButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const tabId = btn.getAttribute('data-tab');
+      if (!tabId) return;
+
+      // Update active sidebar state
+      sidebarButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      // Update screen view
+      previewScreens.forEach(screen => {
+        screen.classList.remove('active');
+      });
+      const activeScreen = document.getElementById(`screen-${tabId}`);
+      if (activeScreen) {
+        activeScreen.classList.add('active');
+      }
+
+      // Update breadcrumb
+      if (previewCrumbs && crumbTitles[tabId]) {
+        previewCrumbs.textContent = crumbTitles[tabId];
+      }
+    });
+  });
+
+  // ── 2. INTERACTIVE DELTA TRANSFER SIMULATOR ──
   const blockGrid = document.getElementById('blockGrid');
   const btnSimulate = document.getElementById('btnSimulateEdit');
   const simBytesTransferred = document.getElementById('simBytesTransferred');
@@ -56,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
     btnSimulate.addEventListener('click', simulateEdit);
   }
 
-  // ── 2. ONE-CLICK CLI CODE COPY ──
+  // ── 3. ONE-CLICK CLI CODE COPY ──
   const btnCopyCLI = document.getElementById('btnCopyCLI');
   const copyBtnText = document.getElementById('copyBtnText');
 
@@ -89,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // ── 3. FAQ ACCORDION INTERACTION ──
+  // ── 4. FAQ ACCORDION INTERACTION ──
   const faqItems = document.querySelectorAll('.faq-item');
   faqItems.forEach(item => {
     const questionBtn = item.querySelector('.faq-question');
@@ -106,7 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // ── 4. SMOOTH SCROLL FOR NAV LINKS ──
+  // ── 5. SMOOTH SCROLL FOR NAV LINKS ──
   document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function(e) {
       const targetId = this.getAttribute('href');

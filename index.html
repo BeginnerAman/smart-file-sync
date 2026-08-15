@@ -97,46 +97,196 @@
         </div>
       </div>
 
-      <!-- App Interface Showcase Mockup -->
+      <!-- App Interface Showcase Mockup (Authentic Windows 11 Native UI) -->
       <div class="hero-preview-frame">
+        <!-- Windows 11 Titlebar -->
         <div class="preview-titlebar">
-          <div class="titlebar-controls">
-            <span class="control-dot close"></span>
-            <span class="control-dot min"></span>
-            <span class="control-dot max"></span>
+          <div class="titlebar-left">
+            <img src="assets/logo_transparent.png" alt="Icon" width="16" height="16">
+            <span class="titlebar-title">Smart File Sync</span>
           </div>
-          <span class="titlebar-title">Smart File Sync - Desktop v4.0</span>
-          <span class="titlebar-status">Offline Engine Active</span>
+          <div class="titlebar-win11-controls">
+            <button class="win11-btn" aria-label="Minimize">&#x2013;</button>
+            <button class="win11-btn" aria-label="Maximize">&#x25A2;</button>
+            <button class="win11-btn win11-close" aria-label="Close">&#x2715;</button>
+          </div>
         </div>
-        <div class="preview-content">
-          <div class="preview-sidebar">
-            <div class="sidebar-item active">Folder Setup</div>
-            <div class="sidebar-item">Scan Results <span class="badge">4</span></div>
-            <div class="sidebar-item">Sync Queue</div>
-            <div class="sidebar-item">Dashboard</div>
-            <div class="sidebar-item">Sync History</div>
-            <div class="sidebar-item">Settings</div>
+
+        <!-- Top Breadcrumb Bar -->
+        <div class="preview-topbar">
+          <div class="topbar-crumbs" id="previewCrumbs">Workspace &rsaquo; Folder Setup</div>
+          <div class="topbar-status-group">
+            <span class="status-indicator-idle"><span class="status-dot"></span> Sync Idle</span>
+            <span class="topbar-last-sync">Last Sync: 18:02</span>
           </div>
+        </div>
+
+        <!-- App Window Content -->
+        <div class="preview-content">
+          <!-- Sidebar -->
+          <div class="preview-sidebar">
+            <button class="sidebar-item active" data-tab="setup">
+              <span class="sidebar-icon">📁</span>
+              <span class="sidebar-text">Folder Setup</span>
+            </button>
+            <button class="sidebar-item" data-tab="results">
+              <span class="sidebar-icon">🔍</span>
+              <span class="sidebar-text">Scan Results</span>
+              <span class="badge">4</span>
+            </button>
+            <button class="sidebar-item" data-tab="queue">
+              <span class="sidebar-icon">⚡</span>
+              <span class="sidebar-text">Sync Queue</span>
+            </button>
+            <button class="sidebar-item" data-tab="dashboard">
+              <span class="sidebar-icon">📊</span>
+              <span class="sidebar-text">Dashboard</span>
+            </button>
+            <button class="sidebar-item" data-tab="history">
+              <span class="sidebar-icon">🕒</span>
+              <span class="sidebar-text">Sync History</span>
+            </button>
+            <button class="sidebar-item" data-tab="settings">
+              <span class="sidebar-icon">⚙️</span>
+              <span class="sidebar-text">Settings</span>
+            </button>
+            <div class="sidebar-footer-tag">Ready &middot; Offline Engine</div>
+          </div>
+
+          <!-- Main Client Area (Dynamic Screen Views) -->
           <div class="preview-main">
-            <div class="preview-cards-grid">
-              <div class="ui-card">
-                <span class="ui-label">SOURCE DIRECTORY</span>
-                <div class="ui-path">D:\Projects\Production_Data</div>
-                <div class="ui-meta">14,280 files &middot; 48.2 GB &middot; Modified Today</div>
+            <!-- Screen 1: Folder Setup -->
+            <div class="preview-screen active" id="screen-setup">
+              <div class="setup-grid">
+                <!-- Source Card -->
+                <div class="setup-card">
+                  <div class="setup-card-header">SOURCE DIRECTORY</div>
+                  <div class="setup-input-row">
+                    <input type="text" class="setup-input" value="D:\Projects\Production_Data" readonly>
+                    <button class="setup-browse-btn">Browse</button>
+                  </div>
+                  <div class="setup-stats-grid">
+                    <div class="stat-col"><span class="stat-lbl">Total Size</span><span class="stat-val">48.2 GB</span></div>
+                    <div class="stat-col"><span class="stat-lbl">File Count</span><span class="stat-val">14,280 files</span></div>
+                    <div class="stat-col"><span class="stat-lbl">Last Modified</span><span class="stat-val">Today 17:45</span></div>
+                  </div>
+                </div>
+
+                <!-- Destination Card -->
+                <div class="setup-card">
+                  <div class="setup-card-header">DESTINATION DIRECTORY (USB 3.2)</div>
+                  <div class="setup-input-row">
+                    <input type="text" class="setup-input" value="E:\Backups\Daily_Mirror" readonly>
+                    <button class="setup-browse-btn">Browse</button>
+                  </div>
+                  <div class="setup-stats-grid">
+                    <div class="stat-col"><span class="stat-lbl">Total Size</span><span class="stat-val">48.1 GB</span></div>
+                    <div class="stat-col"><span class="stat-lbl">File Count</span><span class="stat-val">14,276 files</span></div>
+                    <div class="stat-col"><span class="stat-lbl">Drive Type</span><span class="stat-val green">Removable USB</span></div>
+                  </div>
+                </div>
               </div>
-              <div class="ui-card">
-                <span class="ui-label">DESTINATION DIRECTORY</span>
-                <div class="ui-path">E:\Backups\Daily_Mirror</div>
-                <div class="ui-meta">14,276 files &middot; 48.1 GB &middot; USB 3.2 Drive</div>
+
+              <!-- Setup Options Bar -->
+              <div class="setup-options-panel">
+                <div class="opt-pill"><strong>Filter:</strong> All Files (Default)</div>
+                <div class="opt-pill"><strong>Exclusions:</strong> .git, node_modules (2 rules)</div>
+                <div class="opt-pill"><strong>Mode:</strong> Bidirectional (Two-Way)</div>
+                <div class="opt-pill"><strong>Delta Sync:</strong> Enabled</div>
+              </div>
+
+              <div class="setup-action-row">
+                <span class="validation-msg">&#10003; Folders validated. Ready to scan differences.</span>
+                <button class="btn-launch-scan">Launch Directory Scan</button>
               </div>
             </div>
-            <div class="ui-progress-box">
-              <div class="progress-info">
-                <span class="progress-task">Delta Sync: video_edit_master.prproj (99.8% transfer saved)</span>
-                <span class="progress-speed">142.4 MB/s &middot; 16 Threads</span>
+
+            <!-- Screen 2: Scan Results -->
+            <div class="preview-screen" id="screen-results">
+              <div class="results-header-bar">
+                <div class="results-pills">
+                  <span class="pill-tab active">All Differences (4)</span>
+                  <span class="pill-tab">Missing (1)</span>
+                  <span class="pill-tab">Modified (3)</span>
+                </div>
+                <span class="results-summary">4 files require sync (142.8 MB)</span>
               </div>
-              <div class="progress-bar-bg">
-                <div class="progress-bar-fill" style="width: 88%;"></div>
+              <div class="results-table-mock">
+                <div class="table-row table-head">
+                  <span>Filename</span>
+                  <span>Size</span>
+                  <span>Modified Date</span>
+                  <span>Sync Action</span>
+                </div>
+                <div class="table-row">
+                  <span class="file-name">&#10003; video_edit_master.prproj</span>
+                  <span class="file-size">142.0 MB</span>
+                  <span class="file-date">Today 18:00</span>
+                  <span class="badge-action delta">Delta Sync (4KB)</span>
+                </div>
+                <div class="table-row">
+                  <span class="file-name">&#10003; client_brief_v2.docx</span>
+                  <span class="file-size">520.4 KB</span>
+                  <span class="file-date">Today 17:52</span>
+                  <span class="badge-action copy">Copy Modified</span>
+                </div>
+                <div class="table-row">
+                  <span class="file-name">&#10003; render_pass_04.png</span>
+                  <span class="file-size">280.1 KB</span>
+                  <span class="file-date">Today 17:50</span>
+                  <span class="badge-action new">New File</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Screen 3: Sync Queue -->
+            <div class="preview-screen" id="screen-queue">
+              <div class="queue-status-box">
+                <div class="queue-status-line">
+                  <span class="queue-main-task">Syncing: video_edit_master.prproj (Block 32/36)</span>
+                  <span class="queue-speed">142.4 MB/s &middot; ETA: 0.1s</span>
+                </div>
+                <div class="progress-bar-bg">
+                  <div class="progress-bar-fill" style="width: 88%;"></div>
+                </div>
+                <div class="queue-metrics-row">
+                  <span>Transferred: <strong>4.0 KB / 142.0 MB</strong> (99.8% saved via Delta)</span>
+                  <span>Threads: <strong>16 Parallel Workers</strong></span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Screen 4: Dashboard -->
+            <div class="preview-screen" id="screen-dashboard">
+              <div class="dashboard-stats-grid">
+                <div class="dash-stat-box"><span class="d-val green">100%</span><span class="d-lbl">System Health</span></div>
+                <div class="dash-stat-box"><span class="d-val">14,280</span><span class="d-lbl">Total Scanned</span></div>
+                <div class="dash-stat-box"><span class="d-val">4</span><span class="d-lbl">Files Synced</span></div>
+                <div class="dash-stat-box"><span class="d-val green">0</span><span class="d-lbl">Errors</span></div>
+              </div>
+              <div class="dash-log-box">
+                <div class="log-entry"><span class="log-time">18:02:49</span> <span class="log-msg green">&#10003; Sync completed: 3 files synced successfully (35.7 KB)</span></div>
+                <div class="log-entry"><span class="log-time">18:02:48</span> <span class="log-msg">&bull; Delta transfer: video_edit_master.prproj (99.8% bandwidth saved)</span></div>
+                <div class="log-entry"><span class="log-time">18:00:43</span> <span class="log-msg green">&#10003; USB Drive E:\ validated and mounted safely</span></div>
+              </div>
+            </div>
+
+            <!-- Screen 5: History -->
+            <div class="preview-screen" id="screen-history">
+              <div class="history-item-mock">
+                <div class="hist-hdr"><span>2026-08-15 18:02:49</span> <span class="badge-status success">SUCCESS</span> <button class="mini-load-btn">Load into Setup</button></div>
+                <div class="hist-paths">D:\Projects\Production_Data &rarr; E:\Backups\Daily_Mirror</div>
+                <div class="hist-meta">Duration: 0.0s &middot; Synced: 3 files (35.7 KB) &middot; Errors: 0</div>
+              </div>
+            </div>
+
+            <!-- Screen 6: Settings -->
+            <div class="preview-screen" id="screen-settings">
+              <div class="settings-mock-grid">
+                <div class="setting-row"><span>Multi-Threading Performance:</span> <strong>16 Parallel Threads (Max)</strong></div>
+                <div class="setting-row"><span>Block-Level Delta Transfer:</span> <strong class="green">&#10003; Active</strong></div>
+                <div class="setting-row"><span>File Versioning Archive:</span> <strong>Keep 3 Old Versions (.smartsync_versions)</strong></div>
+                <div class="setting-row"><span>Windows Background Service Mode:</span> <strong class="green">&#10003; Enabled</strong></div>
               </div>
             </div>
           </div>
@@ -371,7 +521,7 @@
             <tr>
               <td>Full CLI Automation Interface</td>
               <td class="highlight-col"><span class="check-icon">&#10003; Full CLI Support</span></td>
-              <td><span class="cross-icon">&#10007; Enterprise Add-on</span></td>
+              <td><span class="cross-icon">&#10007; Enterprise Add-on Only</span></td>
               <td><span class="cross-icon">&#10007; Batch XML Configs</span></td>
             </tr>
           </tbody>
@@ -427,58 +577,97 @@
     </div>
   </section>
 
-  <!-- Downloads Section -->
+  <!-- Downloads Section (Redesigned Ultra-Premium High-Impact Cards) -->
   <section class="section downloads-section" id="downloads">
     <div class="container">
       <div class="section-header text-center">
         <span class="section-kicker">GET STARTED</span>
         <h2 class="section-title">Download Smart File Sync for Windows</h2>
-        <p class="section-desc">Free, open source, and ready to use immediately. No setup installer needed.</p>
+        <p class="section-desc">100% Free, open-source, and verified with zero telemetry. Select your preferred package below.</p>
       </div>
 
       <div class="downloads-cards-grid">
         <!-- Download Option 1: Standalone Single Exe -->
         <div class="download-card featured">
-          <div class="download-badge">RECOMMENDED &middot; SINGLE FILE</div>
-          <h3 class="download-title">Standalone Executable</h3>
-          <p class="download-desc">Self-contained executable. Double-click and run from anywhere on Windows 10 or 11.</p>
-          <div class="download-size-tag">
-            <span class="size-val">26.7 MB</span>
-            <span class="size-detail">Clean Slim Build &middot; 64-bit</span>
+          <div class="card-glow-effect"></div>
+          <div class="download-top-bar">
+            <span class="download-badge highlight">POPULAR &middot; SINGLE EXECUTABLE</span>
+            <span class="release-ver-tag">v4.0.0</span>
           </div>
-          <a href="https://github.com/BeginnerAman/smart-file-sync/releases/download/v4.0.0/SmartFileSync.exe" class="btn btn-primary btn-block" id="btnDownloadExe">
-            <svg class="icon-svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
-            </svg>
-            <span>Download SmartFileSync.exe</span>
-          </a>
-          <ul class="download-specs">
-            <li>&#10003; Single file &middot; No extraction needed</li>
-            <li>&#10003; MD5 verification &amp; Delta transfer engine</li>
-            <li>&#10003; Windows 10 / Windows 11 (64-bit)</li>
-          </ul>
+
+          <div class="download-card-body">
+            <h3 class="download-title">Standalone Executable</h3>
+            <p class="download-desc">Self-contained single executable file. Double-click and run from anywhere on Windows with zero setup.</p>
+            
+            <div class="download-meta-chips">
+              <span class="meta-chip"><span>Size:</span> <strong>26.7 MB</strong></span>
+              <span class="meta-chip"><span>Arch:</span> <strong>64-bit</strong></span>
+              <span class="meta-chip"><span>Status:</span> <strong class="green">&#10003; Clean Slim</strong></span>
+            </div>
+
+            <!-- Premium Download Button -->
+            <a href="https://github.com/BeginnerAman/smart-file-sync/releases/download/v4.0.0/SmartFileSync.exe" class="premium-download-btn primary" id="btnDownloadExe">
+              <div class="btn-icon-wrapper">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+                </svg>
+              </div>
+              <div class="btn-text-wrapper">
+                <span class="btn-main-title">Download SmartFileSync.exe</span>
+                <span class="btn-sub-caption">Direct Download &middot; 26.7 MB &middot; Windows 10/11</span>
+              </div>
+              <div class="btn-arrow-badge">&rarr;</div>
+            </a>
+          </div>
+
+          <div class="download-card-footer">
+            <ul class="download-specs-clean">
+              <li><span class="spec-check">&#10003;</span> Single file &middot; No decompression required</li>
+              <li><span class="spec-check">&#10003;</span> Integrated Delta &amp; MD5 hash engine</li>
+              <li><span class="spec-check">&#10003;</span> Microsoft SmartScreen &amp; offline verified</li>
+            </ul>
+          </div>
         </div>
 
         <!-- Download Option 2: Portable Folder Zip -->
         <div class="download-card">
-          <div class="download-badge">PORTABLE EDITION &middot; FASTEST LAUNCH</div>
-          <h3 class="download-title">Instant Portable Folder</h3>
-          <p class="download-desc">Pre-extracted portable edition. Opens in 0.2 seconds with zero temporary decompression overhead.</p>
-          <div class="download-size-tag">
-            <span class="size-val">Portable Zip</span>
-            <span class="size-detail">Instant 0.2s Startup &middot; USB Ready</span>
+          <div class="download-top-bar">
+            <span class="download-badge">PORTABLE EDITION &middot; ZERO LATENCY</span>
+            <span class="release-ver-tag">v4.0.0</span>
           </div>
-          <a href="https://github.com/BeginnerAman/smart-file-sync/releases/download/v4.0.0/SmartFileSync-Portable.zip" class="btn btn-secondary btn-block" id="btnDownloadZip">
-            <svg class="icon-svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
-            </svg>
-            <span>Download Portable Folder</span>
-          </a>
-          <ul class="download-specs">
-            <li>&#10003; Best for external USB flash drives &amp; SSDs</li>
-            <li>&#10003; Zero temporary extraction delay</li>
-            <li>&#10003; Fully portable settings &amp; history</li>
-          </ul>
+
+          <div class="download-card-body">
+            <h3 class="download-title">Instant Portable Edition</h3>
+            <p class="download-desc">Pre-extracted directory edition in a ZIP archive. Opens in 0.2 seconds with zero temporary decompression overhead.</p>
+            
+            <div class="download-meta-chips">
+              <span class="meta-chip"><span>Size:</span> <strong>26.7 MB Zip</strong></span>
+              <span class="meta-chip"><span>Launch:</span> <strong class="green">0.2s Instant</strong></span>
+              <span class="meta-chip"><span>Target:</span> <strong>USB / SSD</strong></span>
+            </div>
+
+            <!-- Premium Download Button -->
+            <a href="https://github.com/BeginnerAman/smart-file-sync/releases/download/v4.0.0/SmartFileSync-Portable.zip" class="premium-download-btn secondary" id="btnDownloadZip">
+              <div class="btn-icon-wrapper">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+                </svg>
+              </div>
+              <div class="btn-text-wrapper">
+                <span class="btn-main-title">Download Portable Folder</span>
+                <span class="btn-sub-caption">ZIP Archive &middot; 26.7 MB &middot; Instant USB Launch</span>
+              </div>
+              <div class="btn-arrow-badge">&rarr;</div>
+            </a>
+          </div>
+
+          <div class="download-card-footer">
+            <ul class="download-specs-clean">
+              <li><span class="spec-check">&#10003;</span> Ideal for portable USB flash drives &amp; SSDs</li>
+              <li><span class="spec-check">&#10003;</span> Fastest startup speed with zero temporary extraction</li>
+              <li><span class="spec-check">&#10003;</span> Portable config &amp; history persistence</li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>
