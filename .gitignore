@@ -1,0 +1,33 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+
+# Distribution / packaging
+build/
+dist/
+*.spec.bak
+*.egg-info/
+
+# SmartFileSync runtime data & versions
+.smartsync*
+sync_history.csv
+
+# Temporary test scripts and logs in root
+/debug_*.py
+/test_*.py
+test_log.txt
+*.log
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+
+# OS metadata
+Thumbs.db
+Desktop.ini
+.DS_Store
