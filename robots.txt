@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://beginneraman.github.io/smart-file-sync/sitemap.xml
