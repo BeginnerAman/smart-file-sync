@@ -302,6 +302,7 @@ a {
 .section {
   padding: 84px 0;
   border-top: 1px solid var(--border-subtle);
+  scroll-margin-top: 88px;
 }
 
 .section-header {
@@ -651,6 +652,7 @@ a {
   max-width: 960px;
   margin-left: auto;
   margin-right: auto;
+  align-items: stretch;
 }
 
 .download-card {
@@ -728,25 +730,28 @@ a {
   color: #94a3b8;
   margin-bottom: 18px;
   line-height: 1.5;
+  min-height: 42px;
 }
 
 .download-meta-chips {
   display: flex;
-  flex-wrap: wrap;
+  align-items: center;
   gap: 8px;
   margin-bottom: 24px;
+  flex-wrap: nowrap;
 }
 
 .meta-chip {
   background-color: #0b1120;
   border: 1px solid #1a2742;
   border-radius: 6px;
-  padding: 5px 10px;
-  font-size: 12px;
+  padding: 5px 9px;
+  font-size: 11px;
   color: #94a3b8;
   display: inline-flex;
   align-items: center;
   gap: 4px;
+  white-space: nowrap;
 }
 
 .meta-chip strong {
@@ -775,6 +780,7 @@ a {
   position: relative;
   overflow: hidden;
   user-select: none;
+  margin-top: auto;
 }
 
 /* Primary Button (Standalone Exe) */
@@ -797,17 +803,17 @@ a {
 
 /* Secondary Button (Portable Folder) */
 .premium-download-btn.secondary {
-  background: linear-gradient(135deg, #131f38 0%, #0e172a 100%);
+  background: linear-gradient(135deg, #101d36 0%, #0d172a 100%);
   color: #ffffff;
-  border: 1px solid #2a3e66;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
 }
 
 .premium-download-btn.secondary:hover {
   border-color: #38bdf8;
-  background: linear-gradient(135deg, #1a2a4c 0%, #131f38 100%);
+  background: linear-gradient(135deg, #162747 0%, #101d36 100%);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(56, 189, 248, 0.2);
+  box-shadow: 0 6px 20px rgba(56, 189, 248, 0.25);
 }
 
 .premium-download-btn.secondary:active {
@@ -828,7 +834,7 @@ a {
 }
 
 .premium-download-btn.secondary .btn-icon-wrapper {
-  background-color: rgba(56, 189, 248, 0.12);
+  background-color: rgba(56, 189, 248, 0.15);
   color: #38bdf8;
 }
 
