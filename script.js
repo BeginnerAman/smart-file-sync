@@ -5,46 +5,7 @@
 
 document.addEventListener('DOMContentLoaded', () => {
 
-  // ── 1. APP SHOWCASE SCREEN SWITCHER (Interactive Desktop Mockup) ──
-  const sidebarButtons = document.querySelectorAll('.preview-sidebar .sidebar-item');
-  const previewScreens = document.querySelectorAll('.preview-screen');
-  const previewCrumbs = document.getElementById('previewCrumbs');
-
-  const crumbTitles = {
-    'setup': 'Workspace › Folder Setup',
-    'results': 'Workspace › Scan Differences (4 Items)',
-    'queue': 'Workspace › Active Sync Queue (16 Threads)',
-    'dashboard': 'Workspace › Health & Analytics Dashboard',
-    'history': 'Workspace › Audit & Sync History',
-    'settings': 'Workspace › Engine Preferences & Rules'
-  };
-
-  sidebarButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const tabId = btn.getAttribute('data-tab');
-      if (!tabId) return;
-
-      // Update active sidebar state
-      sidebarButtons.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-
-      // Update screen view
-      previewScreens.forEach(screen => {
-        screen.classList.remove('active');
-      });
-      const activeScreen = document.getElementById(`screen-${tabId}`);
-      if (activeScreen) {
-        activeScreen.classList.add('active');
-      }
-
-      // Update breadcrumb
-      if (previewCrumbs && crumbTitles[tabId]) {
-        previewCrumbs.textContent = crumbTitles[tabId];
-      }
-    });
-  });
-
-  // ── 2. INTERACTIVE DELTA TRANSFER SIMULATOR ──
+  // ── 1. INTERACTIVE DELTA TRANSFER SIMULATOR ──
   const blockGrid = document.getElementById('blockGrid');
   const btnSimulate = document.getElementById('btnSimulateEdit');
   const simBytesTransferred = document.getElementById('simBytesTransferred');
