@@ -10,6 +10,7 @@
 
 <p align="center">
   <a href="https://github.com/BeginnerAman/smart-file-sync/releases"><img src="https://img.shields.io/badge/release-v4.0.0-0ea5e9?style=flat-square" alt="Release v4.0.0"></a>
+  <a href="https://github.com/BeginnerAman"><img src="https://img.shields.io/badge/author-Aman%20Vishwakarma-0ea5e9?style=flat-square" alt="Author: Aman Vishwakarma"></a>
   <a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13-38bdf8?style=flat-square" alt="Python 3.11+"></a>
   <a href="https://pyside.org/"><img src="https://img.shields.io/badge/GUI-PySide6%20%2F%20Qt6-10b981?style=flat-square" alt="PySide6 Qt6"></a>
   <a href="#"><img src="https://img.shields.io/badge/platform-Windows%2010%20%7C%2011%20(64--bit)-64748b?style=flat-square" alt="Windows 64-bit"></a>
@@ -206,6 +207,12 @@ pyinstaller SmartFileSync.spec --clean --noconfirm
 Output binaries will be generated in the `dist/` directory:
 * `dist/SmartFileSync.exe`
 * `dist/SmartFileSync-Portable/`
+
+---
+
+## Author
+
+Developed and maintained by **Aman Vishwakarma** ([@BeginnerAman](https://github.com/BeginnerAman)).
 
 ---
 
