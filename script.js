@@ -106,7 +106,26 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // ── 5. SMOOTH SCROLL FOR NAV LINKS ──
+  // ── 5. SMOOTH SCROLL FOR NAV LINKS & MOBILE MENU CLOSE ──
+  const navToggle = document.getElementById('navToggle');
+  const navMenu = document.getElementById('navMenu');
+
+  if (navToggle && navMenu) {
+    navToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      navToggle.classList.toggle('active');
+      navMenu.classList.toggle('mobile-open');
+    });
+
+    // Close when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!navMenu.contains(e.target) && !navToggle.contains(e.target)) {
+        navToggle.classList.remove('active');
+        navMenu.classList.remove('mobile-open');
+      }
+    });
+  }
+
   document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function(e) {
       const targetId = this.getAttribute('href');
@@ -114,6 +133,13 @@ document.addEventListener('DOMContentLoaded', () => {
       const targetElem = document.querySelector(targetId);
       if (targetElem) {
         e.preventDefault();
+        
+        // Auto-close mobile menu if open
+        if (navToggle && navMenu) {
+          navToggle.classList.remove('active');
+          navMenu.classList.remove('mobile-open');
+        }
+
         targetElem.scrollIntoView({
           behavior: 'smooth',
           block: 'start'
