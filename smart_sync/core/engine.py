@@ -149,6 +149,19 @@ class SyncWorker(QThread):
                             )
                             return "copied", delta_bytes, ""
                     
+                    # Fast path for small files (< 64KB): skip temp rename overhead
+                    if size_b < 65536 and not self.use_md5_verify and self.version_count == 0:
+                        try:
+                            shutil.copy2(_ensure(src), _ensure(dst))
+                        except (PermissionError, OSError):
+                            if attempt < max_retries:
+                                time.sleep(0.5 * (2 ** attempt))
+                                self.signals.file_progress.emit(idx, rel, size_str, "In Progress", f"Retry {attempt + 1}/{max_retries}...")
+                                continue
+                            raise  # Let outer except handlers deal with final failure
+                        self.signals.file_progress.emit(idx, rel, size_str, "Completed", "Synced successfully")
+                        return "copied", size_b, ""
+
                     # Full copy path (for new files or when delta not applicable)
                     tmp_dst = f"{dst}.smartsync.{os.getpid()}_{int(time.time()*1000)}.tmp" if self.use_safe_renames else dst
                     
@@ -210,7 +223,17 @@ class SyncWorker(QThread):
                     self.signals.file_progress.emit(idx, rel, size_str, "Stopped", "User stopped sync")
                     return "stopped", 0, "Sync stopped by user"
                     
-                except PermissionError:
+                except PermissionError as e:
+                    if self.use_safe_renames and 'tmp_dst' in locals():
+                        try:
+                            if os.path.exists(_ensure(tmp_dst)):
+                                os.remove(_ensure(tmp_dst))
+                        except Exception:
+                            pass
+                    if attempt < max_retries:
+                        time.sleep(0.5 * (2 ** attempt))
+                        self.signals.file_progress.emit(idx, rel, size_str, "In Progress", f"Retry {attempt + 1}/{max_retries} (permission)...")
+                        continue
                     msg = f"Permission denied for '{rel}'. Check write permissions."
                     self.signals.file_progress.emit(idx, rel, size_str, "Error", msg)
                     return "error", 0, msg
@@ -228,6 +251,10 @@ class SyncWorker(QThread):
                                 os.remove(_ensure(tmp_dst))
                         except Exception:
                             pass
+                    if attempt < max_retries:
+                        time.sleep(0.5 * (2 ** attempt))
+                        self.signals.file_progress.emit(idx, rel, size_str, "In Progress", f"Retry {attempt + 1}/{max_retries} (I/O)...")
+                        continue
                     msg = str(e)
                     self.signals.file_progress.emit(idx, rel, size_str, "Error", msg)
                     return "error", 0, msg
@@ -292,7 +319,8 @@ class SyncWorker(QThread):
                     elif status == "error":
                         error_count += 1
                         self._consecutive_errors += 1
-                        if self._consecutive_errors >= 5:
+                        _fail_limit = max(10, total_files // 100)
+                        if self._consecutive_errors >= _fail_limit:
                             self._stop_requested = True
                             self.signals.consecutive_fail_limit.emit()
                             

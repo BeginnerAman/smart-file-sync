@@ -629,6 +629,8 @@ class SmartSyncApp(QMainWindow):
         dst = self.folder_setup_page.card_dst.input.text().strip()
         dry = self.folder_setup_page.dry_run_chk.isChecked()
         t_size = sum(f.get("size_bytes", 0) for f in files)
+        self._sync_total_bytes = t_size
+        self._sync_start_time = time.time()
 
         # Styled Confirm Dialog (No raw emojis!)
         if not getattr(self, '_auto_sync_active', False):
@@ -715,9 +717,10 @@ class SmartSyncApp(QMainWindow):
         self.sync_queue_page.lbl_percentage.setText(f"{pct}%")
         self.sync_queue_page.lbl_progress_summary.setText(status_text)
         
-        t_bytes = sum(f.get("size_bytes", 0) for f in self.worker.files_to_sync)
+        t_bytes = getattr(self, '_sync_total_bytes', 0)
         done_bytes = int(t_bytes * (done / total)) if total > 0 else 0
-        throughput = done / max(0.1, time.time() - self.worker._pause_event.is_set())
+        elapsed = time.time() - getattr(self, '_sync_start_time', time.time())
+        throughput = done / max(0.1, elapsed)
         self.sync_queue_page.update_metrics(speed, avg_speed, throughput, eta, done_bytes, t_bytes)
 
     def _on_sync_finished(self, summary):
@@ -786,10 +789,10 @@ class SmartSyncApp(QMainWindow):
             self.status_bar.showMessage("Sync stopped by user.")
 
     def _on_consecutive_fail(self):
-        self._add_log("Emergency stop: 5 consecutive file transfer failures.", "error")
+        self._add_log("Emergency stop: Multiple consecutive file transfer failures.", "error")
         diag = SmartNoticeDialog(
             "Sync Interrupted",
-            "Synchronization was halted because 5 consecutive file transfer operations failed.\n"
+            "Synchronization was halted because multiple consecutive file transfer operations failed.\n"
             "Please check network connectivity or disk write permissions.",
             parent=self
         )

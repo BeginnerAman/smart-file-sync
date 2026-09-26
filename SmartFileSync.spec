@@ -2,10 +2,10 @@
 import os
 
 a = Analysis(
-    ['C:\\Users\\Aman\\Downloads\\adv_file_sync - Copy\\app.py'],
+    ['app.py'],
     pathex=[],
     binaries=[],
-    datas=[('C:\\Users\\Aman\\Downloads\\adv_file_sync - Copy\\smart_sync\\assets', 'smart_sync/assets')],
+    datas=[('smart_sync/assets', 'smart_sync/assets')],
     hiddenimports=['watchdog', 'watchdog.observers', 'watchdog.events'],
     hookspath=[],
     hooksconfig={},
@@ -62,7 +62,7 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=['C:\\Users\\Aman\\Downloads\\adv_file_sync - Copy\\app_icon.ico'],
+    icon=['smart_sync/assets/icon.ico'],
 )
 
 # ── 2. PORTABLE INSTANT-LAUNCH FOLDER (Zero Extraction Delay) ──
@@ -77,7 +77,7 @@ exe_portable = EXE(
     strip=False,
     upx=False,
     console=False,
-    icon=['C:\\Users\\Aman\\Downloads\\adv_file_sync - Copy\\app_icon.ico'],
+    icon=['smart_sync/assets/icon.ico'],
 )
 
 coll = COLLECT(

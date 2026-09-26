@@ -19,6 +19,7 @@ class SyncQueuePage(QWidget):
         self.main_win = main_win
 
         self._file_statuses = {} # idx -> status_str
+        self._counts = {"All": 0, "Pending": 0, "Active": 0, "Completed": 0, "Error": 0}
 
         lay = QVBoxLayout(self)
         lay.setContentsMargins(24, 18, 24, 18)
@@ -152,12 +153,23 @@ class SyncQueuePage(QWidget):
 
         self.tab_bar.setCurrentIndex(0) # Default to 'All Files'
         self.queue_container.setCurrentWidget(self.queue_table)
-        self._update_tab_counts()
+        self._counts = {"All": len(files), "Pending": len(files), "Active": 0, "Completed": 0, "Error": 0}
+        self._refresh_tab_labels()
         self._on_tab_filter_changed(0)
 
+    @staticmethod
+    def _status_to_bucket(status: str) -> str:
+        """Map file status string to tab counter bucket name"""
+        if status == "Pending": return "Pending"
+        if status == "In Progress": return "Active"
+        if status == "Completed": return "Completed"
+        if status in ("Error", "Stopped"): return "Error"
+        return ""
+
     def update_file_status(self, idx: int, status: str, detail: str = ""):
-        """Update row status in-place at O(1) speed"""
+        """Update row status in-place at O(1) speed with incremental tab counts"""
         if idx < self.queue_table.rowCount():
+            old_status = self._file_statuses.get(idx, "")
             self._file_statuses[idx] = status
             item_status = self.queue_table.item(idx, 3)
             if item_status:
@@ -166,8 +178,17 @@ class SyncQueuePage(QWidget):
             if item_detail:
                 item_detail.setText(detail)
 
-            # Apply current filter visibility and tab badges
-            self._update_tab_counts()
+            # Incremental count update — O(1) instead of O(n)
+            old_bucket = self._status_to_bucket(old_status)
+            new_bucket = self._status_to_bucket(status)
+            if old_bucket != new_bucket:
+                if old_bucket and old_bucket in self._counts:
+                    self._counts[old_bucket] = max(0, self._counts[old_bucket] - 1)
+                if new_bucket and new_bucket in self._counts:
+                    self._counts[new_bucket] += 1
+                self._refresh_tab_labels()
+
+            # Apply current filter visibility
             tab_idx = self.tab_bar.currentIndex()
             if tab_idx != 0:
                 self._apply_row_filter(idx, tab_idx)
@@ -189,20 +210,23 @@ class SyncQueuePage(QWidget):
         for r in range(self.queue_table.rowCount()):
             self._apply_row_filter(r, tab_idx)
 
-    def _update_tab_counts(self):
-        counts = {"All": 0, "Pending": 0, "Active": 0, "Completed": 0, "Error": 0}
-        for s in self._file_statuses.values():
-            counts["All"] += 1
-            if s == "Pending": counts["Pending"] += 1
-            elif s == "In Progress": counts["Active"] += 1
-            elif s == "Completed": counts["Completed"] += 1
-            elif s in ("Error", "Stopped"): counts["Error"] += 1
+    def _refresh_tab_labels(self):
+        """Update tab text from cached counts — O(1)"""
+        self.tab_bar.setTabText(0, f"All Files ({self._counts['All']})")
+        self.tab_bar.setTabText(1, f"Pending ({self._counts['Pending']})")
+        self.tab_bar.setTabText(2, f"Active ({self._counts['Active']})")
+        self.tab_bar.setTabText(3, f"Completed ({self._counts['Completed']})")
+        self.tab_bar.setTabText(4, f"Error ({self._counts['Error']})")
 
-        self.tab_bar.setTabText(0, f"All Files ({counts['All']})")
-        self.tab_bar.setTabText(1, f"Pending ({counts['Pending']})")
-        self.tab_bar.setTabText(2, f"Active ({counts['Active']})")
-        self.tab_bar.setTabText(3, f"Completed ({counts['Completed']})")
-        self.tab_bar.setTabText(4, f"Error ({counts['Error']})")
+    def _update_tab_counts(self):
+        """Full recount from statuses — used only during reset/init"""
+        self._counts = {"All": 0, "Pending": 0, "Active": 0, "Completed": 0, "Error": 0}
+        for s in self._file_statuses.values():
+            self._counts["All"] += 1
+            bucket = self._status_to_bucket(s)
+            if bucket in self._counts:
+                self._counts[bucket] += 1
+        self._refresh_tab_labels()
 
     def update_metrics(self, current_speed, avg_speed, throughput, eta_sec, copied_bytes, total_bytes):
         self.lbl_curr_speed.setText(f"Current Speed: {fmt_speed(current_speed)}")
@@ -210,11 +234,11 @@ class SyncQueuePage(QWidget):
         self.lbl_files_sec.setText(f"Throughput: {throughput:.1f} files/s" if throughput > 0 else "Throughput: -")
         self.lbl_eta.setText(f"Time Left: {fmt_eta(eta_sec)}")
         self.lbl_data_copied.setText(f"Data Copied: {fmt_size(copied_bytes)} / {fmt_size(total_bytes)}")
-        self._update_tab_counts()
 
     def reset_view(self):
         self.queue_table.setRowCount(0)
         self._file_statuses.clear()
+        self._counts = {"All": 0, "Pending": 0, "Active": 0, "Completed": 0, "Error": 0}
         self.main_progress.setValue(0)
         self.lbl_percentage.setText("0%")
         self.lbl_curr_speed.setText("Current Speed: -")

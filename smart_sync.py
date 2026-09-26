@@ -1,5 +1,5 @@
 """
-Smart File Sync App v3.0 — Premium Edition
+Smart File Sync App v4.1 — Premium Edition
 ===========================================
 A complete modern UI/UX redesign of the sync application matching premium design patterns
 (Notion, Linear, Raycast, Fluent Design style).
