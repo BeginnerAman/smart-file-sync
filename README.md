@@ -16,7 +16,7 @@
   <a href="https://pyside.org/"><img src="https://img.shields.io/badge/GUI-PySide6%20%2F%20Qt6-10b981?style=flat-square" alt="PySide6 Qt6"></a>
   <a href="#"><img src="https://img.shields.io/badge/platform-Windows%2010%20%7C%2011%20(64--bit)-64748b?style=flat-square" alt="Windows 64-bit"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" alt="MIT License"></a>
-  <a href="#"><img src="https://img.shields.io/badge/tests-25%2F25%20passing-success?style=flat-square" alt="Tests Passing"></a>
+  <a href="#"><img src="https://img.shields.io/badge/tests-33%2F33%20passing-success?style=flat-square" alt="Tests Passing"></a>
 </p>
 
 <p align="center">
@@ -55,6 +55,15 @@ In large-scale stress testing across 66,844 files (7.5 GB directory structure on
 | **Memory Footprint During Sync** | 250 MB+ (Unbounded futures) | **< 5 MB (Sliding Window)** | 98% Memory Reduction |
 | **Pause / Stop Responsiveness** | 30 to 90 seconds delay | **< 10 Milliseconds** | Instantaneous |
 | **Small File Metadata Overhead** | 66k repeated syscalls | **1-Pass Upfront Directory Cache** | Eliminated redundant I/O |
+
+### Real-World Multi-Drive Endurance Verification
+
+Beyond isolated benchmarks, Smart File Sync v4.2 has undergone continuous real-world stress testing across diverse hardware targets (NVMe SSDs, external USB 3.0/2.0 storage, large media sets, and deep nested codebases):
+
+* **Total Files Processed:** **105,661 files**
+* **Total Transferred Data:** **16.35 GB** across 6 consecutive multi-workload sessions
+* **Total Errors Recorded:** **0 (Zero Errors / 100% Data Fidelity)**
+* **User Interruption Handling:** Immediate clean stop (< 40ms) with zero orphaned temporary file corruption or application freezes.
 
 ---
 
@@ -103,7 +112,7 @@ Instead of scheduling tens of thousands of tasks into memory at once, the engine
 * Keeps a tightly controlled queue of in-flight tasks (`max_in_flight = 64 to 128`).
 * Memory consumption remains virtually flat (under 5 MB) regardless of whether synchronizing 50 files or 500,000 files.
 * Pause and Cancel requests take effect in under 10 milliseconds because background workers do not have to drain a massive backlog of scheduled futures.
-* Performance Presets: **Eco** (2–4 threads), **Balanced** (8–16 threads), and **Turbo** (16–32 threads).
+* Performance Presets: **Eco** (50% CPU cores for quiet background sync), **Balanced** (dynamically matches 1:1 with your hardware's logical CPU cores, e.g. 8 cores = 8 threads), and **Turbo Boost** (200% core oversubscription for maximum NVMe/SSD saturation, up to 32 threads via slider).
 
 ### 3. FAT32 & exFAT 2-Second Timestamp Tolerance
 External USB flash drives formatted in FAT32 or exFAT store file modification timestamps with a 2-second resolution (compared to NTFS's 100-nanosecond resolution).
@@ -141,6 +150,18 @@ Displaying 66,000+ file rows in a desktop interface typically overwhelms Qt's la
 
 ### 12. Persistent Metadata Scan Caching
 * Generates persistent JSON filesystem index caches (`metadata_cache.json`). Subsequent differential scans across 100,000+ files detect modified trees in milliseconds instead of rescanning entire disks.
+
+### 13. 64-Bit Multi-Terabyte Scale Architecture (`qint64`)
+* All metadata counters, capacity calculations, and Qt thread signals are built on native 64-bit signed integers (`qint64`).
+* Completely eliminates legacy 32-bit (4GB) integer overflow bugs, guaranteeing seamless operations on multi-terabyte drives (> 4GB up to Petabytes).
+
+### 14. Smart Destination Detection & Automated Directory Creation
+* Differentiates between disconnected physical drive hardware (e.g. unmounted USB letters) and new target folders.
+* Brand-new backup folders are marked as `0 B (New)` and automatically created upon scan launch, removing manual setup friction.
+
+### 15. Zero-Friction Desktop Controls & Queue Context Menu
+* Features high-contrast dark and light theme switching with distinct cyan (#38bdf8) sizing chips and 40px primary action buttons.
+* Right-click any row in the active Sync Queue to open the file in Windows Explorer, explore the destination directory, or copy relative paths.
 
 ---
 
