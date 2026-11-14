@@ -72,6 +72,11 @@ class FolderMetaCard(QFrame):
         lay.addWidget(meta_frame)
 
     def set_stats(self, count: int, size_bytes: int, mtime_str: str):
+        if mtime_str == "New Folder":
+            self.lbl_count.setText("0 files")
+            self.lbl_size.setText("0 B (New)")
+            self.lbl_mtime.setText("New Folder")
+            return
         self.lbl_count.setText(f"{count:,} files" if count >= 0 else "-")
         self.lbl_size.setText(fmt_size(size_bytes) if size_bytes >= 0 else "-")
         self.lbl_mtime.setText(mtime_str or "-")

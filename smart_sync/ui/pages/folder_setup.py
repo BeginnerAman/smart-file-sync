@@ -47,6 +47,8 @@ class FolderSetupPage(QWidget):
         self.card_dst = FolderMetaCard("Destination Directory", "Browse destination directory path...", self._browse_dst)
         self.card_src.input.editingFinished.connect(lambda: self._trigger_metadata_scan("src"))
         self.card_dst.input.editingFinished.connect(lambda: self._trigger_metadata_scan("dst"))
+        self.card_src.input.textChanged.connect(self._validate_inputs)
+        self.card_dst.input.textChanged.connect(self._validate_inputs)
 
         grid_folders.addWidget(self.card_src, 0, 0)
         grid_folders.addWidget(self.card_dst, 0, 1)
@@ -143,9 +145,22 @@ class FolderSetupPage(QWidget):
 
     def _trigger_metadata_scan(self, key):
         path = self.card_src.input.text().strip() if key == "src" else self.card_dst.input.text().strip()
-        if not path or not os.path.isdir(path):
+        if not path:
             card = self.card_src if key == "src" else self.card_dst
             card.reset_stats()
+            self._validate_inputs()
+            return
+
+        if not os.path.isdir(path):
+            if key == "dst":
+                drive, _ = os.path.splitdrive(os.path.abspath(path))
+                if drive and os.path.exists(drive + os.sep):
+                    self.card_dst.set_stats(0, 0, "New Folder")
+                    self._validate_inputs()
+                    return
+            card = self.card_src if key == "src" else self.card_dst
+            card.reset_stats()
+            self._validate_inputs()
             return
             
         # Safely disconnect and stop any existing scanner thread for this key
