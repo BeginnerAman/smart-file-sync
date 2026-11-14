@@ -48,7 +48,7 @@ class DashboardPage(QWidget):
         
         lbl_h_title = QLabel("SYNC HEALTH & CAPACITY")
         lbl_h_title.setObjectName("stat_label")
-        lbl_h_title.setFont(QFont("Segoe UI", 8, QFont.Bold))
+        lbl_h_title.setFont(QFont("Segoe UI", 9, QFont.Bold))
         ch_lay.addWidget(lbl_h_title)
         
         h_row = QHBoxLayout()
@@ -58,9 +58,9 @@ class DashboardPage(QWidget):
         
         v_hd = QVBoxLayout()
         self.lbl_health_desc = QLabel("System is fully synced.")
-        self.lbl_health_desc.setStyleSheet("color: #94a3b8; font-size: 11px;")
+        self.lbl_health_desc.setStyleSheet("color: #94a3b8; font-size: 12px;")
         self.lbl_disk_info = QLabel("Ready - Disks idle")
-        self.lbl_disk_info.setStyleSheet("color: #64748b; font-size: 10px;")
+        self.lbl_disk_info.setStyleSheet("color: #64748b; font-size: 11px;")
         v_hd.addWidget(self.lbl_health_desc)
         v_hd.addWidget(self.lbl_disk_info)
         
@@ -78,14 +78,14 @@ class DashboardPage(QWidget):
         
         lbl_ls_title = QLabel("LAST SYNCHRONIZATION")
         lbl_ls_title.setObjectName("stat_label")
-        lbl_ls_title.setFont(QFont("Segoe UI", 8, QFont.Bold))
+        lbl_ls_title.setFont(QFont("Segoe UI", 9, QFont.Bold))
         cls_lay.addWidget(lbl_ls_title)
         
         ls_grid = QGridLayout(); ls_grid.setSpacing(4)
         self.lbl_last_status = QLabel("Status: Idle"); self.lbl_last_status.setFont(QFont("Segoe UI", 9, QFont.Bold)); self.lbl_last_status.setStyleSheet("color: #10b981;")
-        self.lbl_last_time = QLabel("Time: Never"); self.lbl_last_time.setStyleSheet("color: #94a3b8; font-size: 11px;")
-        self.lbl_last_files = QLabel("Files: 0"); self.lbl_last_files.setStyleSheet("color: #94a3b8; font-size: 11px;")
-        self.lbl_last_size = QLabel("Data: 0 B"); self.lbl_last_size.setStyleSheet("color: #94a3b8; font-size: 11px;")
+        self.lbl_last_time = QLabel("Time: Never"); self.lbl_last_time.setStyleSheet("color: #94a3b8; font-size: 12px;")
+        self.lbl_last_files = QLabel("Files: 0"); self.lbl_last_files.setStyleSheet("color: #94a3b8; font-size: 12px;")
+        self.lbl_last_size = QLabel("Data: 0 B"); self.lbl_last_size.setStyleSheet("color: #94a3b8; font-size: 12px;")
         
         ls_grid.addWidget(self.lbl_last_status, 0, 0); ls_grid.addWidget(self.lbl_last_time, 0, 1)
         ls_grid.addWidget(self.lbl_last_files, 1, 0); ls_grid.addWidget(self.lbl_last_size, 1, 1)
@@ -100,7 +100,7 @@ class DashboardPage(QWidget):
         
         lbl_st_title = QLabel("ACTIVE WORKFLOW STAGE")
         lbl_st_title.setObjectName("stat_label")
-        lbl_st_title.setFont(QFont("Segoe UI", 8, QFont.Bold))
+        lbl_st_title.setFont(QFont("Segoe UI", 9, QFont.Bold))
         cst_lay.addWidget(lbl_st_title)
         
         self.workflow_tracker = VisualStepTracker(self)

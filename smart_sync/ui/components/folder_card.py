@@ -47,12 +47,15 @@ class FolderMetaCard(QFrame):
         grid.setSpacing(6)
         
         self.lbl_size = QLabel("-")
+        self.lbl_size.setObjectName("folder_meta_val_size")
         self.lbl_count = QLabel("-")
+        self.lbl_count.setObjectName("folder_meta_val")
         self.lbl_mtime = QLabel("-")
+        self.lbl_mtime.setObjectName("folder_meta_val")
         
-        for lbl in [self.lbl_size, self.lbl_count, self.lbl_mtime]:
-            lbl.setFont(QFont("Segoe UI", 9, QFont.Bold))
-            lbl.setStyleSheet("color: #94a3b8; background: transparent;")
+        self.lbl_size.setFont(QFont("Segoe UI", 12, QFont.Bold))
+        self.lbl_count.setFont(QFont("Segoe UI", 11, QFont.Bold))
+        self.lbl_mtime.setFont(QFont("Segoe UI", 10))
             
         t_size = QLabel("Total Size")
         t_count = QLabel("File Count")
@@ -60,7 +63,7 @@ class FolderMetaCard(QFrame):
         
         for t in [t_size, t_count, t_mtime]:
             t.setObjectName("folder_meta_lbl")
-            t.setFont(QFont("Segoe UI", 8))
+            t.setFont(QFont("Segoe UI", 10))
             
         grid.addWidget(t_size, 0, 0); grid.addWidget(self.lbl_size, 0, 1)
         grid.addWidget(t_count, 1, 0); grid.addWidget(self.lbl_count, 1, 1)

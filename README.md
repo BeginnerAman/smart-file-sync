@@ -282,7 +282,8 @@ smart-file-sync/
 │   ├── cli.py                 # Headless CLI entry point
 │   └── __main__.py            # Python package runner
 ├── tests/
-│   ├── test_core.py           # Core logic, delta, and filesystem unit tests
+│   ├── test_core.py           # Core logic, delta, 64-bit signals, and filesystem unit tests
+│   ├── test_cli.py            # Headless CLI, bidirectional sync, and orphan pruning tests
 │   └── test_engine.py         # Win32 DMA, sliding window, and batch queue benchmarks
 ├── app.py                     # Main application GUI entry point
 ├── SmartFileSync.spec         # PyInstaller dual build spec with bloat stripping
@@ -310,7 +311,7 @@ pip install PySide6 watchdog
 ```bash
 python -m unittest discover tests -v
 ```
-*Executes all 25 unit, integration, and performance benchmark tests.*
+*Executes all 33 unit, integration, and performance benchmark tests.*
 
 ### 4. Build Standalone Executables
 ```bash

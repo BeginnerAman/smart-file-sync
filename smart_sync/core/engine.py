@@ -14,8 +14,8 @@ from ..core import hasher as _hasher
 from ..core import delta as _delta
 
 class WorkerSignals(QObject):
-    file_progress = Signal(int, str, str, str, str) # idx, rel_path, size_str, status, detail
-    overall_progress = Signal(int, int, str, float, float, float) # done, total, status_text, speed, avg_speed, eta
+    file_progress = Signal('qint64', str, str, str, str) # idx, rel_path, size_str, status, detail
+    overall_progress = Signal('qint64', 'qint64', str, float, float, float) # done, total, status_text, speed, avg_speed, eta
     log_message = Signal(str, str) # text, kind ("info", "warning", "error", "success")
     finished = Signal(dict) # summary stats
     consecutive_fail_limit = Signal() # triggered on repeated error bursts

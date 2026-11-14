@@ -112,12 +112,12 @@ class FolderSetupPage(QWidget):
         # Bottom Actions
         act_row = QHBoxLayout()
         self.lbl_status_msg = QLabel("Select directories to start scan.")
-        self.lbl_status_msg.setStyleSheet("color: #64748b; font-size: 11px;")
+        self.lbl_status_msg.setStyleSheet("color: #94a3b8; font-size: 13px; font-weight: 500;")
         
         self.scan_btn = QPushButton("Launch Directory Scan")
         self.scan_btn.setObjectName("btn_scan")
-        self.scan_btn.setFixedHeight(36)
-        self.scan_btn.setMinimumWidth(180)
+        self.scan_btn.setFixedHeight(40)
+        self.scan_btn.setMinimumWidth(200)
         self.scan_btn.setCursor(Qt.PointingHandCursor)
         self.scan_btn.clicked.connect(self.main_win._on_scan_clicked)
 
@@ -185,20 +185,20 @@ class FolderSetupPage(QWidget):
         if not src or not dst:
             self.scan_btn.setEnabled(False)
             self.lbl_status_msg.setText("Please select source and destination directories.")
-            self.lbl_status_msg.setStyleSheet("color: #64748b; font-size: 11px;")
+            self.lbl_status_msg.setStyleSheet("color: #94a3b8; font-size: 13px; font-weight: 500;")
             return
 
         if not os.path.isdir(src):
             self.scan_btn.setEnabled(False)
             self.lbl_status_msg.setText("Source folder does not exist or is not accessible.")
-            self.lbl_status_msg.setStyleSheet("color: #ef4444; font-size: 11px;")
+            self.lbl_status_msg.setStyleSheet("color: #ef4444; font-size: 13px; font-weight: 500;")
             return
 
         drive, _ = os.path.splitdrive(os.path.abspath(dst))
         if drive and not os.path.exists(drive + os.sep):
             self.scan_btn.setEnabled(False)
             self.lbl_status_msg.setText(f"Destination drive ({drive}) is not connected or accessible.")
-            self.lbl_status_msg.setStyleSheet("color: #ef4444; font-size: 11px;")
+            self.lbl_status_msg.setStyleSheet("color: #ef4444; font-size: 13px; font-weight: 500;")
             return
 
         is_new_dst = not os.path.isdir(dst)
@@ -209,7 +209,7 @@ class FolderSetupPage(QWidget):
         if abs_src.lower() == abs_dst.lower():
             self.scan_btn.setEnabled(False)
             self.lbl_status_msg.setText("Source and Destination cannot be the exact same folder.")
-            self.lbl_status_msg.setStyleSheet("color: #ef4444; font-size: 11px;")
+            self.lbl_status_msg.setStyleSheet("color: #ef4444; font-size: 13px; font-weight: 500;")
             return
 
         # Check for nested recursive loops (e.g. C:\Data and C:\Data\Backup)
@@ -217,19 +217,19 @@ class FolderSetupPage(QWidget):
         if (abs_dst.lower() + sep).startswith(abs_src.lower() + sep):
             self.scan_btn.setEnabled(False)
             self.lbl_status_msg.setText("Destination cannot be a subfolder of Source (prevents recursive copy loops).")
-            self.lbl_status_msg.setStyleSheet("color: #ef4444; font-size: 11px;")
+            self.lbl_status_msg.setStyleSheet("color: #ef4444; font-size: 13px; font-weight: 500;")
             return
 
         if (abs_src.lower() + sep).startswith(abs_dst.lower() + sep):
             self.scan_btn.setEnabled(False)
             self.lbl_status_msg.setText("Source cannot be inside Destination (prevents recursive copy loops).")
-            self.lbl_status_msg.setStyleSheet("color: #ef4444; font-size: 11px;")
+            self.lbl_status_msg.setStyleSheet("color: #ef4444; font-size: 13px; font-weight: 500;")
             return
 
         self.scan_btn.setEnabled(True)
         if is_new_dst:
             self.lbl_status_msg.setText("Destination folder will be created automatically on scan.")
-            self.lbl_status_msg.setStyleSheet("color: #3b82f6; font-size: 11px;")
+            self.lbl_status_msg.setStyleSheet("color: #38bdf8; font-size: 13px; font-weight: 500;")
         else:
             self.lbl_status_msg.setText("Folders validated. Launch scan to compute differences.")
-            self.lbl_status_msg.setStyleSheet("color: #10b981; font-size: 11px;")
+            self.lbl_status_msg.setStyleSheet("color: #10b981; font-size: 13px; font-weight: 500;")

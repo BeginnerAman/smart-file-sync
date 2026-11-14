@@ -31,19 +31,38 @@ def get_theme_stylesheet(dark_mode: bool = True) -> str:
             color: #94a3b8;
         }
         QLabel#card_header, QLabel#stat_label {
-            font-size: 9px;
+            font-size: 11px;
             font-weight: 700;
             color: #94a3b8;
-            letter-spacing: 1px;
+            letter-spacing: 0.8px;
         }
         QLabel#small_lbl {
-            font-size: 11px;
-            color: #94a3b8;
+            font-size: 12px;
+            font-weight: 600;
+            color: #cbd5e1;
         }
         QLabel#chip_lbl {
-            font-size: 11px;
+            font-size: 12px;
             color: #94a3b8;
             font-weight: 500;
+        }
+        QLabel#folder_meta_lbl {
+            font-size: 12px;
+            color: #94a3b8;
+            font-weight: 500;
+            background: transparent;
+        }
+        QLabel#folder_meta_val {
+            font-size: 13px;
+            color: #f8fafc;
+            font-weight: 600;
+            background: transparent;
+        }
+        QLabel#folder_meta_val_size {
+            font-size: 14px;
+            color: #38bdf8;
+            font-weight: 700;
+            background: transparent;
         }
 
         /* ── SIDEBAR ── */
@@ -406,19 +425,38 @@ def get_theme_stylesheet(dark_mode: bool = True) -> str:
             color: #64748b;
         }
         QLabel#card_header, QLabel#stat_label {
-            font-size: 9px;
+            font-size: 11px;
             font-weight: 700;
             color: #64748b;
-            letter-spacing: 1px;
+            letter-spacing: 0.8px;
         }
         QLabel#small_lbl {
-            font-size: 11px;
-            color: #64748b;
+            font-size: 12px;
+            font-weight: 600;
+            color: #334155;
         }
         QLabel#chip_lbl {
-            font-size: 11px;
+            font-size: 12px;
             color: #64748b;
             font-weight: 500;
+        }
+        QLabel#folder_meta_lbl {
+            font-size: 12px;
+            color: #64748b;
+            font-weight: 500;
+            background: transparent;
+        }
+        QLabel#folder_meta_val {
+            font-size: 13px;
+            color: #0f172a;
+            font-weight: 600;
+            background: transparent;
+        }
+        QLabel#folder_meta_val_size {
+            font-size: 14px;
+            color: #0284c7;
+            font-weight: 700;
+            background: transparent;
         }
 
         /* ── SIDEBAR ── */

@@ -101,8 +101,8 @@ class MetadataScanner(QThread):
 
 class DiffScanWorker(QThread):
     """Background thread for full source/destination diff scan with live progress."""
-    progress = Signal(str, int)       # (phase_label, files_scanned_so_far)
-    finished = Signal(dict, dict, list, int, int, int)  # (src_map, dst_map, missing_list, total, missing_ct, modified_ct)
+    progress = Signal(str, 'qint64')       # (phase_label, files_scanned_so_far)
+    finished = Signal(dict, dict, list, 'qint64', 'qint64', 'qint64')  # (src_map, dst_map, missing_list, total, missing_ct, modified_ct)
     error = Signal(str)
 
     def __init__(self, src: str, dst: str, exclusions: list[str], allowed_exts: set[str] | None, parent: QObject | None = None) -> None:

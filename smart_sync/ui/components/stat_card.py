@@ -14,10 +14,10 @@ class StatCard(QFrame):
         
         self.lbl_title = QLabel(title.upper())
         self.lbl_title.setObjectName("stat_label")
-        self.lbl_title.setFont(QFont("Segoe UI", 8, QFont.Bold))
+        self.lbl_title.setFont(QFont("Segoe UI", 9, QFont.Bold))
         
         self.lbl_val = QLabel(value)
-        self.lbl_val.setFont(QFont("Segoe UI", 16, QFont.Bold))
+        self.lbl_val.setFont(QFont("Segoe UI", 18, QFont.Bold))
         self.lbl_val.setStyleSheet(f"color: {accent_color}; background: transparent;")
         
         lay.addWidget(self.lbl_title)

@@ -192,5 +192,28 @@ class TestPlatformWin(unittest.TestCase):
         self.assertTrue(ext_unc.startswith("\\\\?\\UNC\\nas_server"))
         self.assertEqual(clean_display_path(ext_unc), unc_p)
 
+class TestLargeCapacityHandling(unittest.TestCase):
+    def test_large_capacity_signals(self):
+        from smart_sync.core.scanner import MetadataScanner, DiffScanWorker
+        # 56 GB file size (exceeds 32-bit 4GB limit)
+        large_size = 56_595_564_661
+        large_count = 250_000
+        
+        scanner = MetadataScanner('src', '')
+        received = []
+        scanner.finished_signal.connect(lambda k, c, s, m: received.append((k, c, s, m)))
+        scanner.finished_signal.emit('src', large_count, large_size, 1700000000.0)
+        
+        self.assertEqual(len(received), 1)
+        self.assertEqual(received[0][1], large_count)
+        self.assertEqual(received[0][2], large_size)
+        self.assertEqual(fmt_size(received[0][2]), '52.7 GB')
+
+    def test_fmt_size_large_drives(self):
+        self.assertEqual(fmt_size(56_595_564_661), '52.7 GB')
+        self.assertEqual(fmt_size(2 * 1024**4), '2.0 TB')
+        self.assertEqual(fmt_size(5 * 1024**5), '5.0 PB')
+
+
 if __name__ == '__main__':
     unittest.main()

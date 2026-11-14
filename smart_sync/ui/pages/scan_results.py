@@ -173,8 +173,8 @@ class ScanResultsPage(QWidget):
         self._dp_props = {}
         prop_items = [("Full Path", "dp_full_path"), ("Relative Path", "dp_rel_path"), ("Size", "dp_size"), ("Modified", "dp_modified")]
         for i, (label, key) in enumerate(prop_items):
-            l = QLabel(label); l.setFont(QFont("Segoe UI", 8, QFont.Bold)); l.setStyleSheet("color: #64748b;")
-            v = QLabel("-"); v.setFont(QFont("Segoe UI", 8)); v.setWordWrap(True); v.setTextInteractionFlags(Qt.TextSelectableByMouse)
+            l = QLabel(label); l.setFont(QFont("Segoe UI", 9, QFont.Bold)); l.setStyleSheet("color: #94a3b8;")
+            v = QLabel("-"); v.setFont(QFont("Segoe UI", 9)); v.setWordWrap(True); v.setTextInteractionFlags(Qt.TextSelectableByMouse)
             props_grid.addWidget(l, i, 0); props_grid.addWidget(v, i, 1)
             self._dp_props[key] = v
         dp_lay.addLayout(props_grid)
@@ -211,18 +211,18 @@ class ScanResultsPage(QWidget):
         # Footer Actions
         foot_row = QHBoxLayout()
         self.lbl_summary = QLabel("0 files selected for synchronization.")
-        self.lbl_summary.setStyleSheet("color: #64748b; font-size: 11px;")
+        self.lbl_summary.setStyleSheet("color: #94a3b8; font-size: 13px; font-weight: 500;")
         
         self.btn_sync_sel = QPushButton("Sync Selected")
         self.btn_sync_sel.setObjectName("btn_sel")
-        self.btn_sync_sel.setFixedHeight(36)
+        self.btn_sync_sel.setFixedHeight(40)
         self.btn_sync_sel.setEnabled(False)
         self.btn_sync_sel.setCursor(Qt.PointingHandCursor)
         self.btn_sync_sel.clicked.connect(self.main_win._on_sync_sel)
 
         self.btn_sync_all = QPushButton("Sync All Files")
         self.btn_sync_all.setObjectName("btn_sync")
-        self.btn_sync_all.setFixedHeight(36)
+        self.btn_sync_all.setFixedHeight(40)
         self.btn_sync_all.setEnabled(False)
         self.btn_sync_all.setCursor(Qt.PointingHandCursor)
         self.btn_sync_all.clicked.connect(self.main_win._on_sync_all)
@@ -236,17 +236,17 @@ class ScanResultsPage(QWidget):
     def _make_stat_chip(self, label, value, color):
         chip = QFrame()
         chip.setObjectName("scan_stat_chip")
-        chip.setFixedHeight(32)
+        chip.setFixedHeight(34)
         lay = QHBoxLayout(chip)
-        lay.setContentsMargins(10, 4, 10, 4)
-        lay.setSpacing(6)
+        lay.setContentsMargins(12, 4, 12, 4)
+        lay.setSpacing(8)
         
         dot = QLabel("●")
         dot.setStyleSheet(f"font-size: 8px; color: {color};")
         lbl = QLabel(label)
-        lbl.setStyleSheet("font-size: 11px; color: #64748b; font-weight: 500;")
+        lbl.setStyleSheet("font-size: 12px; color: #94a3b8; font-weight: 500;")
         val = QLabel(value)
-        val.setStyleSheet(f"font-size: 12px; color: {color}; font-weight: 700;")
+        val.setStyleSheet(f"font-size: 13px; color: {color}; font-weight: 700;")
         
         lay.addWidget(dot); lay.addWidget(lbl); lay.addWidget(val)
         chip._val = val
