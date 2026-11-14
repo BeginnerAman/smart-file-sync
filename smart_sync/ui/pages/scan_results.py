@@ -342,7 +342,22 @@ class ScanResultsPage(QWidget):
 
     def _update_checked_count(self):
         total = self.proxy_model.rowCount()
-        cnt = sum(1 for r in range(total) if self.proxy_model.mapToSource(self.proxy_model.index(r, 0)).row() in self.source_model.checked_rows)
+        src_total = len(self.source_model._data)
+        checked_count = len(self.source_model.checked_rows)
+
+        # High-speed O(1) shortcuts to eliminate search keystroke lag on 66k items
+        if checked_count == src_total:
+            cnt = total
+        elif total == src_total:
+            cnt = checked_count
+        elif checked_count == 0:
+            cnt = 0
+        else:
+            chk = self.source_model.checked_rows
+            map_fn = self.proxy_model.mapToSource
+            idx_fn = self.proxy_model.index
+            cnt = sum(1 for r in range(total) if map_fn(idx_fn(r, 0)).row() in chk)
+
         self.lbl_summary.setText(f"{cnt} of {total} items selected for synchronization.")
         self.btn_sync_sel.setEnabled(cnt > 0)
         self.btn_sync_all.setEnabled(total > 0)

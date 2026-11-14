@@ -181,11 +181,48 @@ class FolderSetupPage(QWidget):
     def _validate_inputs(self):
         src = self.card_src.input.text().strip()
         dst = self.card_dst.input.text().strip()
-        valid = bool(src and dst and os.path.isdir(src) and os.path.isdir(dst) and os.path.abspath(src) != os.path.abspath(dst))
-        self.scan_btn.setEnabled(valid)
-        if valid:
-            self.lbl_status_msg.setText("✓ Folders validated. Launch scan to compute differences.")
-            self.lbl_status_msg.setStyleSheet("color: #10b981; font-size: 11px;")
-        else:
-            self.lbl_status_msg.setText("Please select valid, distinct source and destination folders.")
+
+        if not src or not dst:
+            self.scan_btn.setEnabled(False)
+            self.lbl_status_msg.setText("Please select source and destination directories.")
             self.lbl_status_msg.setStyleSheet("color: #64748b; font-size: 11px;")
+            return
+
+        if not os.path.isdir(src):
+            self.scan_btn.setEnabled(False)
+            self.lbl_status_msg.setText("Source folder does not exist or is not accessible.")
+            self.lbl_status_msg.setStyleSheet("color: #ef4444; font-size: 11px;")
+            return
+
+        if not os.path.isdir(dst):
+            self.scan_btn.setEnabled(False)
+            self.lbl_status_msg.setText("Destination folder does not exist or is not accessible.")
+            self.lbl_status_msg.setStyleSheet("color: #ef4444; font-size: 11px;")
+            return
+
+        abs_src = os.path.abspath(src).rstrip("\\/")
+        abs_dst = os.path.abspath(dst).rstrip("\\/")
+
+        if abs_src.lower() == abs_dst.lower():
+            self.scan_btn.setEnabled(False)
+            self.lbl_status_msg.setText("Source and Destination cannot be the exact same folder.")
+            self.lbl_status_msg.setStyleSheet("color: #ef4444; font-size: 11px;")
+            return
+
+        # Check for nested recursive loops (e.g. C:\Data and C:\Data\Backup)
+        sep = os.sep
+        if (abs_dst.lower() + sep).startswith(abs_src.lower() + sep):
+            self.scan_btn.setEnabled(False)
+            self.lbl_status_msg.setText("Destination cannot be a subfolder of Source (prevents recursive copy loops).")
+            self.lbl_status_msg.setStyleSheet("color: #ef4444; font-size: 11px;")
+            return
+
+        if (abs_src.lower() + sep).startswith(abs_dst.lower() + sep):
+            self.scan_btn.setEnabled(False)
+            self.lbl_status_msg.setText("Source cannot be inside Destination (prevents recursive copy loops).")
+            self.lbl_status_msg.setStyleSheet("color: #ef4444; font-size: 11px;")
+            return
+
+        self.scan_btn.setEnabled(True)
+        self.lbl_status_msg.setText("✓ Folders validated. Launch scan to compute differences.")
+        self.lbl_status_msg.setStyleSheet("color: #10b981; font-size: 11px;")

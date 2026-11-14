@@ -5,11 +5,15 @@ import stat
 import ctypes
 
 def ensure_extended_path(p: str) -> str:
-    """Prepend Windows extended-length path prefix \\\\?\\ for long paths (>260 chars)"""
+    """Prepend Windows extended-length path prefix \\\\?\\ or \\\\?\\UNC\\ for long paths (>260 chars)"""
     if sys.platform == 'win32' and p:
         p_abs = os.path.abspath(p)
-        if not p_abs.startswith('\\\\?\\') and not p_abs.startswith('\\\\'):
-            return f"\\\\?\\{p_abs}"
+        if p_abs.startswith('\\\\?\\'):
+            return p_abs
+        if p_abs.startswith('\\\\'):
+            # Network share (UNC path): \\server\share -> \\?\UNC\server\share
+            return f"\\\\?\\UNC\\{p_abs[2:]}"
+        return f"\\\\?\\{p_abs}"
     return p
 
 def clean_display_path(p: str) -> str:
@@ -63,6 +67,62 @@ def safe_chmod_write(filepath: str) -> None:
                 os.chmod(ext_path, current_mode | stat.S_IWRITE)
     except Exception:
         pass
+
+# ─────────────────────────────────────────────────────────────────────────────
+# WIN32 KERNEL FAST COPY (CopyFileExW)
+# ─────────────────────────────────────────────────────────────────────────────
+_copy_file_ex_w = None
+if sys.platform == 'win32':
+    try:
+        from ctypes import wintypes
+        _kernel32 = ctypes.windll.kernel32
+        _copy_file_ex_w = _kernel32.CopyFileExW
+        _copy_file_ex_w.argtypes = [
+            wintypes.LPCWSTR,
+            wintypes.LPCWSTR,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.POINTER(wintypes.BOOL),
+            wintypes.DWORD
+        ]
+        _copy_file_ex_w.restype = wintypes.BOOL
+    except Exception:
+        _copy_file_ex_w = None
+
+def native_fast_copy(src: str, dst: str, cancel_flag_callable=None) -> bool:
+    """
+    High-Performance Windows Kernel-Level File Copy using CopyFileExW.
+    Preserves creation time, write time, and file attributes directly in kernel space.
+    Falls back gracefully to shutil.copy2 on failure or non-Windows platforms.
+    """
+    import shutil
+    src_ext = ensure_extended_path(src)
+    dst_ext = ensure_extended_path(dst)
+
+    if cancel_flag_callable and cancel_flag_callable():
+        raise InterruptedError("Cancelled by user")
+
+    if _copy_file_ex_w is not None:
+        try:
+            # 0x0800 = COPY_FILE_COPY_SYMLINK
+            flags = 0x0800
+            success = _copy_file_ex_w(src_ext, dst_ext, None, None, None, flags)
+            if success:
+                return True
+            else:
+                err = ctypes.GetLastError()
+                if err in (2, 3):
+                    raise FileNotFoundError(f"Source file not found (WinError {err})")
+                elif err == 5:
+                    raise PermissionError(f"Access denied (WinError 5)")
+                # Fallback to standard copy2 on unexpected OS status
+        except (FileNotFoundError, PermissionError, InterruptedError):
+            raise
+        except Exception:
+            pass
+
+    shutil.copy2(src_ext, dst_ext)
+    return True
 
 def set_windows_startup(app_name: str, app_path: str, enable: bool = True) -> bool:
     """Add or remove application from Windows user Run registry"""

@@ -185,12 +185,13 @@ class DiffScanWorker(QThread):
                     })
                 else:
                     d_data = dst_map[rel]
-                    if s_size != d_data["size"] or abs(s_mtime - d_data["mtime"]) > 1.0:
+                    # FAT32/exFAT USB drives have 2-second timestamp resolution. Use 2.0s tolerance.
+                    if s_size != d_data["size"] or abs(s_mtime - d_data["mtime"]) > 2.0:
                         modified_count += 1
-                        if s_mtime > d_data["mtime"]:
+                        if s_mtime > d_data["mtime"] + 2.0:
                             reason = "Source Newer"
                             direction = "source_to_dest"
-                        elif d_data["mtime"] > s_mtime:
+                        elif d_data["mtime"] > s_mtime + 2.0:
                             reason = "Destination Newer"
                             direction = "dest_to_source"
                         else:

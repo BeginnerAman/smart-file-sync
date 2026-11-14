@@ -4,7 +4,7 @@ import time
 import shutil
 import threading
 from pathlib import Path
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ThreadPoolExecutor, as_completed, wait, FIRST_COMPLETED
 from PySide6.QtCore import QThread, Signal, QObject
 
 from ..utils.constants import MD5_CHUNK_SIZE, LOG_FILE
@@ -93,11 +93,24 @@ class SyncWorker(QThread):
         # Bind module-level names for Python 3.13 closure compatibility
         _ensure = _pw.ensure_extended_path
         _chmod = _pw.safe_chmod_write
+        _fast_copy = _pw.native_fast_copy
         _streaming = _hasher.calc_streaming_hash
         _md5 = _hasher.calc_file_md5
         _should_delta = _delta.should_use_delta
         _delta_sync = _delta.delta_sync_file
         _fmt = _formatters.fmt_size
+
+        # Bulk pre-create all unique destination directories upfront (eliminates 60,000+ redundant os.makedirs calls)
+        known_dirs = set()
+        dir_lock = threading.Lock()
+        for item in self.files_to_sync:
+            d = os.path.dirname(item["dest_path"])
+            if d and d not in known_dirs:
+                known_dirs.add(d)
+                try:
+                    os.makedirs(_ensure(d), exist_ok=True)
+                except Exception:
+                    pass
 
         def _sync_single(idx, item):
             if self._stop_requested:
@@ -111,8 +124,9 @@ class SyncWorker(QThread):
             size_b = item.get("size_bytes", 0)
             size_str = item.get("size_str", _fmt(size_b))
             
-            # Emit in-progress status
-            self.signals.file_progress.emit(idx, rel, size_str, "In Progress", "Copying...")
+            # Emit in-progress status for larger files (> 1MB) so UI shows active thread writes
+            if size_b >= 1048576:
+                self.signals.file_progress.emit(idx, rel, size_str, "In Progress", "Copying...")
             
             if self.dry_run:
                 time.sleep(0.01)
@@ -122,16 +136,18 @@ class SyncWorker(QThread):
             max_retries = self.retry_count
             for attempt in range(max_retries + 1):
                 try:
-                    if not os.path.exists(_ensure(src)):
-                        msg = "Source file is missing or inaccessible"
-                        self.signals.file_progress.emit(idx, rel, size_str, "Error", msg)
-                        return "error", 0, msg
-                        
-                    os.makedirs(os.path.dirname(dst), exist_ok=True)
-                    _chmod(dst)
-                    
-                    # Block-level delta transfer: only copy changed blocks
-                    if self.use_delta_transfer and _should_delta(src, dst):
+                    # Directory existence check via O(1) in-memory cache
+                    dst_dir = os.path.dirname(dst)
+                    if dst_dir not in known_dirs:
+                        try:
+                            os.makedirs(_ensure(dst_dir), exist_ok=True)
+                            with dir_lock:
+                                known_dirs.add(dst_dir)
+                        except Exception:
+                            pass
+
+                    # Block-level delta transfer: only copy changed blocks for files >= 1MB
+                    if self.use_delta_transfer and size_b >= 1048576 and _should_delta(src, dst):
                         self.signals.file_progress.emit(idx, rel, size_str, "In Progress", "Delta sync...")
                         ok, delta_bytes, total_blocks = _delta_sync(
                             src, dst,
@@ -149,30 +165,46 @@ class SyncWorker(QThread):
                             )
                             return "copied", delta_bytes, ""
                     
-                    # Fast path for small files (< 64KB): skip temp rename overhead
-                    if size_b < 65536 and not self.use_md5_verify and self.version_count == 0:
+                    # Fast path for files (< 1MB) without versioning / md5: skip temp rename overhead
+                    if size_b < 1048576 and not self.use_md5_verify and self.version_count == 0:
                         try:
-                            shutil.copy2(_ensure(src), _ensure(dst))
-                        except (PermissionError, OSError):
+                            _fast_copy(src, dst, cancel_flag_callable=lambda: self._stop_requested)
+                        except FileNotFoundError:
+                            msg = f"Source file is missing or inaccessible: {rel}"
+                            self.signals.file_progress.emit(idx, rel, size_str, "Error", msg)
+                            return "error", 0, msg
+                        except PermissionError:
+                            _chmod(dst)
                             if attempt < max_retries:
-                                time.sleep(0.5 * (2 ** attempt))
+                                time.sleep(0.1 * (2 ** attempt))
                                 self.signals.file_progress.emit(idx, rel, size_str, "In Progress", f"Retry {attempt + 1}/{max_retries}...")
                                 continue
-                            raise  # Let outer except handlers deal with final failure
+                            raise
+                        except OSError:
+                            if attempt < max_retries:
+                                time.sleep(0.1 * (2 ** attempt))
+                                self.signals.file_progress.emit(idx, rel, size_str, "In Progress", f"Retry {attempt + 1}/{max_retries}...")
+                                continue
+                            raise
                         self.signals.file_progress.emit(idx, rel, size_str, "Completed", "Synced successfully")
                         return "copied", size_b, ""
 
-                    # Full copy path (for new files or when delta not applicable)
+                    # Full copy path (for large files or when safe_renames / versioning / MD5 requested)
                     tmp_dst = f"{dst}.smartsync.{os.getpid()}_{int(time.time()*1000)}.tmp" if self.use_safe_renames else dst
                     
-                    with open(_ensure(src), 'rb') as f_in, open(_ensure(tmp_dst), 'wb') as f_out:
-                        src_hash = _streaming(
-                            f_in, f_out,
-                            compute_hash=self.use_md5_verify,
-                            stop_flag_callable=lambda: self._stop_requested,
-                            pause_event=self._pause_event,
-                            throttle_mbps=self.throttle_mbps
-                        )
+                    try:
+                        with open(_ensure(src), 'rb') as f_in, open(_ensure(tmp_dst), 'wb') as f_out:
+                            src_hash = _streaming(
+                                f_in, f_out,
+                                compute_hash=self.use_md5_verify,
+                                stop_flag_callable=lambda: self._stop_requested,
+                                pause_event=self._pause_event,
+                                throttle_mbps=self.throttle_mbps
+                            )
+                    except FileNotFoundError:
+                        msg = f"Source file is missing or inaccessible: {rel}"
+                        self.signals.file_progress.emit(idx, rel, size_str, "Error", msg)
+                        return "error", 0, msg
                         
                     # Preserve file timestamps
                     try:
@@ -190,8 +222,6 @@ class SyncWorker(QThread):
                             return "error", 0, msg
                             
                     if self.use_safe_renames:
-                        _chmod(dst)
-                        
                         # File versioning
                         if self.version_count > 0 and os.path.exists(_ensure(dst)):
                             ver_dir = os.path.join(os.path.dirname(dst), '.smartsync_versions')
@@ -201,7 +231,7 @@ class SyncWorker(QThread):
                             ver_num = len(existing) + 1
                             ver_path = os.path.join(ver_dir, f'{basename}.v{ver_num}')
                             try:
-                                shutil.copy2(_ensure(dst), _ensure(ver_path))
+                                _fast_copy(dst, ver_path)
                                 if len(existing) >= self.version_count:
                                     for old_ver in existing[:len(existing) - self.version_count + 1]:
                                         try:
@@ -211,7 +241,11 @@ class SyncWorker(QThread):
                             except Exception:
                                 pass
                         
-                        os.replace(_ensure(tmp_dst), _ensure(dst))
+                        try:
+                            os.replace(_ensure(tmp_dst), _ensure(dst))
+                        except PermissionError:
+                            _chmod(dst)
+                            os.replace(_ensure(tmp_dst), _ensure(dst))
                         
                     self.signals.file_progress.emit(idx, rel, size_str, "Completed", "Synced successfully")
                     return "copied", size_b, ""
@@ -230,8 +264,12 @@ class SyncWorker(QThread):
                                 os.remove(_ensure(tmp_dst))
                         except Exception:
                             pass
+                    try:
+                        _chmod(dst)
+                    except Exception:
+                        pass
                     if attempt < max_retries:
-                        time.sleep(0.5 * (2 ** attempt))
+                        time.sleep(0.1 * (2 ** attempt))
                         self.signals.file_progress.emit(idx, rel, size_str, "In Progress", f"Retry {attempt + 1}/{max_retries} (permission)...")
                         continue
                     msg = f"Permission denied for '{rel}'. Check write permissions."
@@ -252,7 +290,7 @@ class SyncWorker(QThread):
                         except Exception:
                             pass
                     if attempt < max_retries:
-                        time.sleep(0.5 * (2 ** attempt))
+                        time.sleep(0.1 * (2 ** attempt))
                         self.signals.file_progress.emit(idx, rel, size_str, "In Progress", f"Retry {attempt + 1}/{max_retries} (I/O)...")
                         continue
                     msg = str(e)
@@ -265,7 +303,7 @@ class SyncWorker(QThread):
                         except: pass
 
                     if attempt < max_retries:
-                        time.sleep(0.5 * (2 ** attempt))
+                        time.sleep(0.1 * (2 ** attempt))
                         self.signals.file_progress.emit(idx, rel, size_str, "In Progress", f"Retry {attempt + 1}/{max_retries}...")
                         continue
                     
@@ -294,54 +332,91 @@ class SyncWorker(QThread):
         except Exception:
             pass  # Non-critical, continue anyway
 
-        # Execute transfers with thread pool
-        with ThreadPoolExecutor(max_workers=max(1, self.threads)) as executor:
-            futures = {
-                executor.submit(_sync_single, idx, item): (idx, item)
-                for idx, item in enumerate(self.files_to_sync)
-            }
-            
-            for future in as_completed(futures):
-                if self._stop_requested:
-                    break
-                    
-                idx, item = futures[future]
+        # Execute transfers with thread pool using a bounded sliding window
+        max_workers = max(1, self.threads)
+        max_in_flight = max(max_workers * 4, 64)
+        last_progress_emit = 0.0
+        
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            item_iter = enumerate(self.files_to_sync)
+            futures = {}
+
+            # Prime initial queue
+            for _ in range(min(total_files, max_in_flight)):
                 try:
-                    status, bytes_done, err_msg = future.result()
-                except Exception as e:
-                    status, bytes_done, err_msg = "error", 0, str(e)
-                    
-                with self._lock:
-                    if status == "copied":
-                        copied_count += 1
-                        copied_bytes += bytes_done
-                        self._consecutive_errors = 0
-                    elif status == "error":
-                        error_count += 1
-                        self._consecutive_errors += 1
-                        _fail_limit = max(10, total_files // 100)
-                        if self._consecutive_errors >= _fail_limit:
-                            self._stop_requested = True
-                            self.signals.consecutive_fail_limit.emit()
-                            
-                    # Calculate live performance metrics
-                    now = time.time()
-                    elapsed = now - start_time
-                    time_delta = now - last_metric_time
-                    if time_delta >= 0.5:
-                        current_speed = (copied_bytes - last_metric_bytes) / time_delta
-                        last_metric_time = now
-                        last_metric_bytes = copied_bytes
-                        
-                    avg_speed = copied_bytes / elapsed if elapsed > 0 else 0.0
-                    remaining_bytes = max(0, total_bytes - copied_bytes)
-                    eta = remaining_bytes / avg_speed if avg_speed > 0 else 0.0
-                    
-                    done_total = copied_count + error_count
-                    status_text = f"Synced {copied_count}/{total_files} files ({_fmt(copied_bytes)})"
-                    self.signals.overall_progress.emit(
-                        done_total, total_files, status_text, current_speed, avg_speed, eta
-                    )
+                    idx, item = next(item_iter)
+                    fut = executor.submit(_sync_single, idx, item)
+                    futures[fut] = (idx, item)
+                except StopIteration:
+                    break
+
+            while futures:
+                if self._stop_requested:
+                    for f in list(futures.keys()):
+                        f.cancel()
+                    break
+
+                done_set, _ = wait(futures.keys(), return_when=FIRST_COMPLETED)
+                for future in done_set:
+                    idx, item = futures.pop(future)
+                    try:
+                        status, bytes_done, err_msg = future.result()
+                    except Exception as e:
+                        status, bytes_done, err_msg = "error", 0, str(e)
+
+                    with self._lock:
+                        if status == "copied":
+                            copied_count += 1
+                            copied_bytes += bytes_done
+                            self._consecutive_errors = 0
+                        elif status == "error":
+                            error_count += 1
+                            self._consecutive_errors += 1
+                            _fail_limit = max(10, total_files // 100)
+                            if self._consecutive_errors >= _fail_limit:
+                                self._stop_requested = True
+                                self.signals.consecutive_fail_limit.emit()
+
+                        # Calculate live performance metrics
+                        now = time.time()
+                        elapsed = now - start_time
+                        time_delta = now - last_metric_time
+                        if time_delta >= 0.5:
+                            current_speed = (copied_bytes - last_metric_bytes) / time_delta
+                            last_metric_time = now
+                            last_metric_bytes = copied_bytes
+
+                        avg_speed = copied_bytes / elapsed if elapsed > 0 else 0.0
+                        remaining_bytes = max(0, total_bytes - copied_bytes)
+                        eta = remaining_bytes / avg_speed if avg_speed > 0 else 0.0
+
+                        done_total = copied_count + error_count
+                        # Decouple & throttle overall_progress emissions to ~12 FPS (every 80ms)
+                        if (now - last_progress_emit >= 0.08) or (done_total >= total_files):
+                            last_progress_emit = now
+                            status_text = f"Synced {copied_count}/{total_files} files ({_fmt(copied_bytes)})"
+                            self.signals.overall_progress.emit(
+                                done_total, total_files, status_text, current_speed, avg_speed, eta
+                            )
+
+                    # Replenish queue with next file
+                    if not self._stop_requested:
+                        try:
+                            next_idx, next_item = next(item_iter)
+                            new_fut = executor.submit(_sync_single, next_idx, next_item)
+                            futures[new_fut] = (next_idx, next_item)
+                        except StopIteration:
+                            pass
+
+        # Final progress update on completion
+        now = time.time()
+        elapsed = max(0.001, now - start_time)
+        avg_speed = copied_bytes / elapsed
+        done_total = copied_count + error_count
+        status_text = f"Synced {copied_count}/{total_files} files ({_fmt(copied_bytes)})"
+        self.signals.overall_progress.emit(
+            done_total, total_files, status_text, 0.0, avg_speed, 0.0
+        )
 
         duration = time.time() - start_time
         summary_status = "Interrupted" if self._stop_requested else ("Success" if error_count == 0 else "Completed with Errors")

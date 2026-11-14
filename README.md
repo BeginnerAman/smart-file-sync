@@ -9,14 +9,14 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/BeginnerAman/smart-file-sync/releases"><img src="https://img.shields.io/badge/release-v4.1.0-0ea5e9?style=flat-square" alt="Release v4.1.0"></a>
+  <a href="https://github.com/BeginnerAman/smart-file-sync/releases"><img src="https://img.shields.io/badge/release-v4.2.0-0ea5e9?style=flat-square" alt="Release v4.2.0"></a>
   <a href="https://github.com/BeginnerAman/smart-file-sync/releases"><img src="https://img.shields.io/github/downloads/BeginnerAman/smart-file-sync/total?style=flat-square&label=downloads&color=10b981" alt="Total Downloads"></a>
   <a href="https://github.com/BeginnerAman"><img src="https://img.shields.io/badge/author-Aman%20Vishwakarma%20(%40BeginnerAman)-0ea5e9?style=flat-square" alt="Author: Aman Vishwakarma (@BeginnerAman)"></a>
   <a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13-38bdf8?style=flat-square" alt="Python 3.11+"></a>
   <a href="https://pyside.org/"><img src="https://img.shields.io/badge/GUI-PySide6%20%2F%20Qt6-10b981?style=flat-square" alt="PySide6 Qt6"></a>
   <a href="#"><img src="https://img.shields.io/badge/platform-Windows%2010%20%7C%2011%20(64--bit)-64748b?style=flat-square" alt="Windows 64-bit"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" alt="MIT License"></a>
-  <a href="#"><img src="https://img.shields.io/badge/tests-19%2F19%20passing-success?style=flat-square" alt="Tests Passing"></a>
+  <a href="#"><img src="https://img.shields.io/badge/tests-25%2F25%20passing-success?style=flat-square" alt="Tests Passing"></a>
 </p>
 
 <p align="center">
@@ -79,7 +79,7 @@ Smart File Sync computes rolling 4KB block checksum signatures for both source a
 
 ## Comparison: Smart File Sync vs Alternatives
 
-| Feature | Smart File Sync v4.1 | GoodSync (Commercial) | FreeFileSync |
+| Feature | Smart File Sync v4.2 | GoodSync (Commercial) | FreeFileSync |
 | :--- | :--- | :--- | :--- |
 | **License & Price** | **100% Free & Open Source (MIT)** | $29.95 / year subscription | Free (Donation for auto features) |
 | **Block-Level Delta Transfer** | **Yes (Built-in 4KB Engine)** | Yes | No (Full file re-copy) |
@@ -96,8 +96,8 @@ Smart File Sync computes rolling 4KB block checksum signatures for both source a
 
 Download the latest release from the [Releases Page](https://github.com/BeginnerAman/smart-file-sync/releases):
 
-* **Standalone Executable (`SmartFileSync.exe` - 26.7 MB):** Self-contained single executable. Clean build with all bloat libraries stripped.
-* **Portable Edition (`SmartFileSync-Portable.zip` - 26.7 MB):** Pre-extracted portable folder with instant 0.2s launch speed. Ideal for USB drives.
+* **Standalone Executable (`SmartFileSync.exe` - 23.6 MB):** Self-contained single executable. Clean build with all bloat libraries stripped.
+* **Portable Edition (`SmartFileSync-Portable.zip` - 23.5 MB):** Pre-extracted portable folder with instant 0.2s launch speed. Ideal for USB drives.
 
 ### System Requirements
 

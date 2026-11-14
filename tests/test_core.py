@@ -177,5 +177,20 @@ class TestDriveMonitor(unittest.TestCase):
         drives = get_removable_drives()
         self.assertIsInstance(drives, list)
 
+class TestPlatformWin(unittest.TestCase):
+    def test_extended_path_local_and_unc(self):
+        from smart_sync.core.platform_win import ensure_extended_path, clean_display_path
+        # Test local path
+        local_p = "C:\\Windows\\System32\\calc.exe"
+        ext_local = ensure_extended_path(local_p)
+        self.assertTrue(ext_local.startswith("\\\\?\\C:"))
+        self.assertEqual(clean_display_path(ext_local), local_p)
+
+        # Test UNC network share path
+        unc_p = "\\\\nas_server\\backups\\data.zip"
+        ext_unc = ensure_extended_path(unc_p)
+        self.assertTrue(ext_unc.startswith("\\\\?\\UNC\\nas_server"))
+        self.assertEqual(clean_display_path(ext_unc), unc_p)
+
 if __name__ == '__main__':
     unittest.main()

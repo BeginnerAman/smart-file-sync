@@ -1,6 +1,8 @@
+import os
+import subprocess
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QProgressBar,
-    QTableWidget, QTableWidgetItem, QHeaderView, QStackedWidget, QTabBar
+    QTableWidget, QTableWidgetItem, QHeaderView, QStackedWidget, QTabBar, QMenu, QApplication
 )
 from PySide6.QtGui import QFont
 from PySide6.QtCore import Qt
@@ -20,6 +22,7 @@ class SyncQueuePage(QWidget):
 
         self._file_statuses = {} # idx -> status_str
         self._counts = {"All": 0, "Pending": 0, "Active": 0, "Completed": 0, "Error": 0}
+        self._tab_labels_dirty = False
 
         lay = QVBoxLayout(self)
         lay.setContentsMargins(24, 18, 24, 18)
@@ -77,12 +80,14 @@ class SyncQueuePage(QWidget):
         self.btn_pause = QPushButton("Pause Sync")
         self.btn_pause.setObjectName("mini_btn")
         self.btn_pause.setFixedHeight(32)
+        self.btn_pause.setEnabled(False)
         self.btn_pause.setCursor(Qt.PointingHandCursor)
         self.btn_pause.clicked.connect(self.main_win._on_pause_clicked)
 
         self.btn_stop = QPushButton("Stop Sync")
         self.btn_stop.setObjectName("btn_danger")
         self.btn_stop.setFixedHeight(32)
+        self.btn_stop.setEnabled(False)
         self.btn_stop.setCursor(Qt.PointingHandCursor)
         self.btn_stop.clicked.connect(self.main_win._on_stop_clicked)
 
@@ -125,23 +130,69 @@ class SyncQueuePage(QWidget):
         self.queue_table.verticalHeader().setDefaultSectionSize(32)
 
         hdr = self.queue_table.horizontalHeader()
-        hdr.setSectionResizeMode(0, QHeaderView.ResizeToContents)
-        hdr.setSectionResizeMode(1, QHeaderView.ResizeToContents)
+        hdr.setSectionResizeMode(0, QHeaderView.Interactive)
+        self.queue_table.setColumnWidth(0, 180)
+        hdr.setSectionResizeMode(1, QHeaderView.Interactive)
+        self.queue_table.setColumnWidth(1, 85)
         hdr.setSectionResizeMode(2, QHeaderView.Stretch)
         hdr.setSectionResizeMode(3, QHeaderView.Fixed)
         self.queue_table.setColumnWidth(3, 110)
-        hdr.setSectionResizeMode(4, QHeaderView.ResizeToContents)
+        hdr.setSectionResizeMode(4, QHeaderView.Interactive)
+        self.queue_table.setColumnWidth(4, 200)
 
         self.badge_delegate = BadgeDelegate(lambda: self.main_win.dark_mode, self.queue_table)
         self.queue_table.setItemDelegateForColumn(3, self.badge_delegate)
 
+        self.queue_table.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.queue_table.customContextMenuRequested.connect(self._show_context_menu)
+
         self.queue_container.addWidget(self.queue_table)
         lay.addWidget(self.queue_container, 1)
+
+    def _show_context_menu(self, pos):
+        item = self.queue_table.itemAt(pos)
+        if not item:
+            return
+        row = item.row()
+        rel_item = self.queue_table.item(row, 2)
+        rel_path = rel_item.text() if rel_item else ""
+        detail_item = self.queue_table.item(row, 4)
+        details = detail_item.text() if detail_item else ""
+
+        menu = QMenu(self)
+        action_open_src = menu.addAction("Open Source in File Explorer")
+        action_open_dst = menu.addAction("Open Destination Folder")
+        menu.addSeparator()
+        action_copy_path = menu.addAction("Copy Relative Path")
+        action_copy_detail = menu.addAction("Copy Status Details")
+
+        selected = menu.exec(self.queue_table.viewport().mapToGlobal(pos))
+        if selected == action_open_src:
+            src_base = getattr(self.main_win, 'folder_setup_page', None)
+            src_dir = src_base.card_src.input.text().strip() if src_base else ""
+            if src_dir and rel_path:
+                full_p = os.path.join(src_dir, rel_path)
+                if os.path.exists(full_p):
+                    subprocess.Popen(f'explorer /select,"{os.path.normpath(full_p)}"')
+        elif selected == action_open_dst:
+            dst_base = getattr(self.main_win, 'folder_setup_page', None)
+            dst_dir = dst_base.card_dst.input.text().strip() if dst_base else ""
+            if dst_dir and rel_path:
+                full_p = os.path.join(dst_dir, os.path.dirname(rel_path))
+                if os.path.exists(full_p):
+                    subprocess.Popen(f'explorer "{os.path.normpath(full_p)}"')
+        elif selected == action_copy_path:
+            QApplication.clipboard().setText(rel_path)
+        elif selected == action_copy_detail:
+            QApplication.clipboard().setText(details)
 
     def populate_queue(self, files: list):
         """Initialize unified queue table with pending files"""
         self.queue_table.setRowCount(len(files))
         self._file_statuses.clear()
+        self.btn_pause.setEnabled(True)
+        self.btn_stop.setEnabled(True)
+        self.btn_pause.setText("Pause Sync")
 
         for idx, fi in enumerate(files):
             self._file_statuses[idx] = "Pending"
@@ -186,12 +237,18 @@ class SyncQueuePage(QWidget):
                     self._counts[old_bucket] = max(0, self._counts[old_bucket] - 1)
                 if new_bucket and new_bucket in self._counts:
                     self._counts[new_bucket] += 1
-                self._refresh_tab_labels()
+                self._tab_labels_dirty = True
 
             # Apply current filter visibility
             tab_idx = self.tab_bar.currentIndex()
             if tab_idx != 0:
                 self._apply_row_filter(idx, tab_idx)
+
+    def flush_pending_updates(self):
+        """Batch update tab counts without freezing GUI thread on high throughput"""
+        if getattr(self, '_tab_labels_dirty', False):
+            self._refresh_tab_labels()
+            self._tab_labels_dirty = False
 
     def _apply_row_filter(self, row: int, tab_idx: int):
         status = self._file_statuses.get(row, "")
@@ -239,6 +296,9 @@ class SyncQueuePage(QWidget):
         self.queue_table.setRowCount(0)
         self._file_statuses.clear()
         self._counts = {"All": 0, "Pending": 0, "Active": 0, "Completed": 0, "Error": 0}
+        self.btn_pause.setEnabled(False)
+        self.btn_stop.setEnabled(False)
+        self.btn_pause.setText("Pause Sync")
         self.main_progress.setValue(0)
         self.lbl_percentage.setText("0%")
         self.lbl_curr_speed.setText("Current Speed: -")

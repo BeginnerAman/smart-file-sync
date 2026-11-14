@@ -3,8 +3,8 @@ import os
 from pathlib import Path
 
 APP_NAME = "Smart File Sync"
-APP_VERSION = "4.1.0"
-APP_ID = "SmartFileSync.Pro.v4.1"
+APP_VERSION = "4.2.0"
+APP_ID = "SmartFileSync.Pro.v4.2"
 
 # Assets
 PACKAGE_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

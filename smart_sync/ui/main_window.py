@@ -135,7 +135,7 @@ class SmartSyncApp(QMainWindow):
         self.sidebar_collapsed = self.settings.value("sidebar_collapsed", False, type=bool)
         self.excl_exts = list(DEFAULT_EXCLUSIONS)
         self.total_cores = os.cpu_count() or 4
-        self.thread_count = min(self.total_cores, int(self.settings.value("threads", max(2, self.total_cores // 2))))
+        self.thread_count = min(32, int(self.settings.value("threads", max(4, min(16, self.total_cores * 2)))))
 
         self.missing_files = []
         self.worker = SyncWorker(self)
@@ -708,8 +708,16 @@ class SmartSyncApp(QMainWindow):
         updates = self._batch_queue_updates
         self._batch_queue_updates = []
 
+        # Deduplicate updates in current tick (keep only latest state per file index)
+        latest_updates = {}
         for idx, rel, size, status, detail in updates:
+            latest_updates[idx] = (status, detail)
+
+        for idx, (status, detail) in latest_updates.items():
             self.sync_queue_page.update_file_status(idx, status, detail)
+            
+        if hasattr(self.sync_queue_page, 'flush_pending_updates'):
+            self.sync_queue_page.flush_pending_updates()
 
     def _on_overall_progress(self, done, total, status_text, speed, avg_speed, eta):
         pct = int(done / total * 100) if total > 0 else 0
@@ -750,6 +758,11 @@ class SmartSyncApp(QMainWindow):
         self.missing_files = []
         self.scan_results_page.source_model.clear()
 
+        # Reset Queue button states
+        self.sync_queue_page.btn_pause.setEnabled(False)
+        self.sync_queue_page.btn_stop.setEnabled(False)
+        self.sync_queue_page.btn_pause.setText("Pause Sync")
+
         # Show Styled Completion Modal (No raw emojis!)
         diag = SmartCompleteDialog(summary, parent=self)
         diag.exec()
@@ -787,6 +800,8 @@ class SmartSyncApp(QMainWindow):
         if self.worker.isRunning():
             self.worker.request_stop()
             self.status_bar.showMessage("Sync stopped by user.")
+            self.sync_queue_page.btn_pause.setEnabled(False)
+            self.sync_queue_page.btn_stop.setEnabled(False)
 
     def _on_consecutive_fail(self):
         self._add_log("Emergency stop: Multiple consecutive file transfer failures.", "error")

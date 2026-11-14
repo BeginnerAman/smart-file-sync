@@ -177,10 +177,10 @@ class SettingsPage(QWidget):
         lbl_cpu.setStyleSheet("color: #38bdf8; font-size: 11px; font-weight: 600;")
         pp_lay.addWidget(lbl_cpu)
 
-        # 3 Smart Preset Cards
-        self.eco_threads = min(2, self.total_cores)
-        self.balanced_threads = max(2, self.total_cores // 2)
-        self.turbo_threads = max(2, self.total_cores - 1)
+        # 3 Smart Preset Cards (Tuned for high I/O throughput)
+        self.eco_threads = min(4, max(2, self.total_cores // 2))
+        self.balanced_threads = max(4, min(16, self.total_cores * 2))
+        self.turbo_threads = max(16, min(32, self.total_cores * 4))
 
         presets_lay = QHBoxLayout()
         presets_lay.setSpacing(10)
@@ -205,7 +205,7 @@ class SettingsPage(QWidget):
 
         pp_lay.addLayout(presets_lay)
 
-        # Manual Override Slider
+        # Manual Override Slider (supports up to 32 worker threads for I/O bound sets)
         th_lay = QHBoxLayout()
         lbl_th = QLabel("Concurrent Worker Threads:")
         self.thread_lbl = QLabel(f"{self.main_win.thread_count} threads")
@@ -214,8 +214,8 @@ class SettingsPage(QWidget):
         pp_lay.addLayout(th_lay)
 
         self.thread_slider = QSlider(Qt.Horizontal)
-        self.thread_slider.setRange(1, self.total_cores)
-        self.thread_slider.setValue(min(self.total_cores, self.main_win.thread_count))
+        self.thread_slider.setRange(1, 32)
+        self.thread_slider.setValue(min(32, max(1, self.main_win.thread_count)))
         self.thread_slider.valueChanged.connect(self._on_thread_slider_changed)
         pp_lay.addWidget(self.thread_slider)
 

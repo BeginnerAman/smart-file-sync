@@ -980,6 +980,13 @@ class SyncWorker(QThread):
         for f in files:
             self.file_status_changed.emit(f["rel_path"], "pending", "")
 
+        # Bulk pre-create destination directories upfront
+        for f in files:
+            try:
+                os.makedirs(os.path.dirname(f["dest_path"]), exist_ok=True)
+            except Exception:
+                pass
+
         # Small files — parallel execution
         if small and not self._stop:
             with ThreadPoolExecutor(max_workers=self.threads) as ex:
@@ -1093,6 +1100,20 @@ class SyncWorker(QThread):
             if self.dry_run:
                 self.log_signal.emit(f"[DRY] {Path(fi['rel_path']).name} ({fi['size_str']})", "info")
                 return "copied", ""
+
+            # Fast path for files (< 1MB) without MD5 verification: skip temp file & rename overhead
+            if fi.get("size", 0) < 1048576 and not self.use_md5_verify:
+                try:
+                    shutil.copy2(ensure_extended_path(src), ensure_extended_path(dest))
+                    self.log_signal.emit(f"✅ Synced {Path(fi['rel_path']).name} ({fi['size_str']})", "success")
+                    return "copied", ""
+                except FileNotFoundError:
+                    return "error", "Source file missing"
+                except PermissionError:
+                    safe_chmod_write(dest)
+                    shutil.copy2(ensure_extended_path(src), ensure_extended_path(dest))
+                    self.log_signal.emit(f"✅ Synced {Path(fi['rel_path']).name} ({fi['size_str']})", "success")
+                    return "copied", ""
 
             os.makedirs(os.path.dirname(dest), exist_ok=True)
 

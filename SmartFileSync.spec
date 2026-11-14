@@ -22,7 +22,7 @@ a = Analysis(
     optimize=1,
 )
 
-# ── STRIP UNUSED HEAVY DLLs (Bloat Removal) ──
+# ── STRIP UNUSED HEAVY DLLs & BLOAT PLUGINS ──
 excluded_binary_patterns = [
     'opengl32sw',
     'Qt6Qml',
@@ -31,14 +31,34 @@ excluded_binary_patterns = [
     'Qt6Network',
     'Qt6QmlModels',
     'Qt6OpenGL',
+    'Qt6VirtualKeyboard',
     'd3dcompiler',
     'libcrypto-3',
     'libssl-3',
+    'qdirect2d',
+    'qtuiotouchplugin',
+    'qtvirtualkeyboardplugin',
+    'qtiff',
+    'qwebp',
+    'qjpeg',
+    'qtga',
+    'qwbmp',
+    'qicns',
+    'qpdf',
+    'qgif',
+    'qminimal',
+    'qoffscreen',
 ]
 
 a.binaries = [
     b for b in a.binaries
     if not any(pat.lower() in b[0].lower() for pat in excluded_binary_patterns)
+]
+
+# ── STRIP UNUSED TRANSLATIONS (.qm files: German, Russian, etc.) ──
+a.datas = [
+    d for d in a.datas
+    if not (d[0].endswith('.qm') or 'translations' in d[0].lower())
 ]
 
 pyz = PYZ(a.pure)
