@@ -246,6 +246,11 @@ def get_theme_stylesheet(dark_mode: bool = True) -> str:
             color: #ffffff;
             border-color: #dc2626;
         }
+        QPushButton#btn_danger:disabled {
+            background-color: rgba(51, 65, 85, 0.15);
+            border: 1px solid #1e293b;
+            color: #475569;
+        }
 
         /* ── CARDS & PANELS ── */
         QFrame#stat_card, QFrame#folder_card, QFrame#dashboard_panel, QFrame#options_panel, QFrame#settings_pane {
@@ -640,6 +645,11 @@ def get_theme_stylesheet(dark_mode: bool = True) -> str:
             background-color: #dc2626;
             color: #ffffff;
             border-color: #dc2626;
+        }
+        QPushButton#btn_danger:disabled {
+            background-color: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            color: #94a3b8;
         }
 
         /* ── CARDS & PANELS ── */

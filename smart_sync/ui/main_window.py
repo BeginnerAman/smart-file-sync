@@ -762,10 +762,13 @@ class SmartSyncApp(QMainWindow):
         self.missing_files = []
         self.scan_results_page.source_model.clear()
 
-        # Reset Queue button states
+        # Reset Queue button states & align copied data metrics
         self.sync_queue_page.btn_pause.setEnabled(False)
         self.sync_queue_page.btn_stop.setEnabled(False)
         self.sync_queue_page.btn_pause.setText("Pause Sync")
+        actual_copied_sz = summary.get("copied_size", "")
+        if actual_copied_sz:
+            self.sync_queue_page.lbl_data_copied.setText(f"Data Copied: {actual_copied_sz} / {actual_copied_sz}")
 
         # Show Styled Completion Modal (No raw emojis!)
         diag = SmartCompleteDialog(summary, parent=self)
