@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
       simBytesTransferred.textContent = `${BLOCK_SIZE_BYTES.toLocaleString()} Bytes (4.0 KB)`;
     }
     if (simSavings) {
-      simSavings.textContent = '99.8% Time & Bandwidth Saved (1 of 120 blocks)';
+      simSavings.textContent = '99.8% Time & Bandwidth Saved (1 of 512 blocks in 2MB file)';
     }
   }
 

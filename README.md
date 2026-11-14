@@ -228,6 +228,9 @@ python -m smart_sync --src "D:\Projects" --dst "E:\Backup"
 # Exact mirror mode with MD5 verification and 16 worker threads
 python -m smart_sync --src "D:\Work" --dst "E:\Mirror" --mode mirror --threads 16 --verify
 
+# Two-way bidirectional synchronization with conflict resolution
+python -m smart_sync --src "D:\Work" --dst "E:\Work" --mode two-way
+
 # Sync media files with a 50 MB/s bandwidth throttle limit
 python -m smart_sync --src "D:\Videos" --dst "E:\Backup" --filter .mp4,.mkv --throttle 50
 
@@ -239,7 +242,7 @@ python -m smart_sync --src "D:\Data" --dst "E:\Backup" --dry-run
 
 * `--src <path>` : Source directory path (Required)
 * `--dst <path>` : Destination directory path (Required)
-* `--mode {copy,mirror}` : Synchronization mode (default: `copy`)
+* `--mode {copy,mirror,two-way}` : Synchronization mode (default: `copy`; `two-way` or `bidirectional` for bidirectional sync)
 * `--threads <N>` : Parallel worker thread count (1 to 32, default: `4`)
 * `--dry-run` : Preview operations without writing files
 * `--verify` : Compute and verify MD5 hashes after writing

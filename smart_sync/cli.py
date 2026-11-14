@@ -6,7 +6,7 @@ Usage:
 Options:
     --src PATH          Source directory (required)
     --dst PATH          Destination directory (required)
-    --mode MODE         Sync mode: 'copy' (default) or 'mirror'
+    --mode MODE         Sync mode: 'copy' (default), 'mirror', or 'two-way' (bidirectional)
     --threads N         Number of parallel threads (default: 4)
     --dry-run           Preview only, don't copy files
     --verify            MD5 verify after copy
@@ -31,7 +31,7 @@ from smart_sync.utils.formatters import fmt_size, fmt_speed, fmt_eta
 from smart_sync.utils.constants import APP_VERSION, DEFAULT_EXCLUSIONS
 
 
-def parse_args():
+def parse_args(args=None):
     parser = argparse.ArgumentParser(
         prog='smartsync',
         description='Smart File Sync — Fast, reliable local file synchronization',
@@ -39,12 +39,18 @@ def parse_args():
         epilog="""Examples:
   smartsync --src D:\\Photos --dst E:\\Backup
   smartsync --src D:\\Projects --dst E:\\Mirror --mode mirror
+  smartsync --src D:\\Work --dst E:\\Work --mode two-way
   smartsync --src D:\\Videos --dst E:\\Backup --filter .mp4,.avi --threads 8
   smartsync --src D:\\Work --dst E:\\Backup --dry-run"""
     )
     parser.add_argument('--src', required=True, help='Source directory')
     parser.add_argument('--dst', required=True, help='Destination directory')
-    parser.add_argument('--mode', choices=['copy', 'mirror'], default='copy', help='Sync mode (default: copy)')
+    parser.add_argument(
+        '--mode',
+        choices=['copy', 'mirror', 'two-way', 'bidirectional'],
+        default='copy',
+        help="Sync mode: 'copy' (default), 'mirror', or 'two-way' ('bidirectional')"
+    )
     parser.add_argument('--threads', type=int, default=4, help='Parallel threads (default: 4)')
     parser.add_argument('--dry-run', action='store_true', help='Preview only')
     parser.add_argument('--verify', action='store_true', help='MD5 verify after copy')
@@ -53,7 +59,7 @@ def parse_args():
     parser.add_argument('--throttle', type=int, default=0, help='Bandwidth limit MB/s')
     parser.add_argument('--quiet', action='store_true', help='Suppress progress')
     parser.add_argument('--version', action='version', version=f'Smart File Sync v{APP_VERSION}')
-    return parser.parse_args()
+    return parser.parse_args(args)
 
 
 def print_header(args):
@@ -86,10 +92,12 @@ def scan_directory(path, excl_exts, allowed_exts, label, quiet=False):
     return file_map
 
 
-def compute_diffs(src_map, dst_map, dst_root):
+def compute_diffs(src_map, dst_map, dst_root, mode='copy', src_root=''):
     """Compare source and destination, return list of files to sync."""
-    from datetime import datetime
     diffs = []
+    is_two_way = mode in ('two-way', 'bidirectional')
+
+    # Scan Source -> Destination differences
     for rel, s_data in src_map.items():
         d_full = os.path.join(dst_root, rel)
         if rel not in dst_map:
@@ -99,23 +107,74 @@ def compute_diffs(src_map, dst_map, dst_root):
                 'dest_path': d_full,
                 'size_bytes': s_data['size'],
                 'size_str': fmt_size(s_data['size']),
-                'reason': 'Missing'
+                'reason': 'Missing in Destination' if is_two_way else 'Missing',
+                'direction': 'src_to_dst'
             })
         else:
             d_data = dst_map[rel]
-            if s_data['size'] != d_data['size'] or abs(s_data['mtime'] - d_data['mtime']) > 1.0:
+            # FAT32/exFAT drives have 2.0s timestamp resolution. Use 2.0s tolerance.
+            if s_data['size'] != d_data['size'] or abs(s_data['mtime'] - d_data['mtime']) > 2.0:
+                if is_two_way:
+                    if s_data['mtime'] > d_data['mtime'] + 2.0:
+                        diffs.append({
+                            'rel_path': rel,
+                            'src_path': s_data['full'],
+                            'dest_path': d_full,
+                            'size_bytes': s_data['size'],
+                            'size_str': fmt_size(s_data['size']),
+                            'reason': 'Source Newer',
+                            'direction': 'src_to_dst'
+                        })
+                    elif d_data['mtime'] > s_data['mtime'] + 2.0:
+                        diffs.append({
+                            'rel_path': rel,
+                            'src_path': d_data['full'],
+                            'dest_path': s_data['full'],
+                            'size_bytes': d_data['size'],
+                            'size_str': fmt_size(d_data['size']),
+                            'reason': 'Destination Newer',
+                            'direction': 'dst_to_src'
+                        })
+                    else:
+                        diffs.append({
+                            'rel_path': rel,
+                            'src_path': s_data['full'],
+                            'dest_path': d_full,
+                            'size_bytes': s_data['size'],
+                            'size_str': fmt_size(s_data['size']),
+                            'reason': 'Size Differs (Source Preferred)',
+                            'direction': 'src_to_dst'
+                        })
+                else:
+                    diffs.append({
+                        'rel_path': rel,
+                        'src_path': s_data['full'],
+                        'dest_path': d_full,
+                        'size_bytes': s_data['size'],
+                        'size_str': fmt_size(s_data['size']),
+                        'reason': 'Modified',
+                        'direction': 'src_to_dst'
+                    })
+
+    # For two-way sync, find files present only in Destination and copy to Source
+    if is_two_way and src_root:
+        for rel, d_data in dst_map.items():
+            if rel not in src_map:
+                s_full = os.path.join(src_root, rel)
                 diffs.append({
                     'rel_path': rel,
-                    'src_path': s_data['full'],
-                    'dest_path': d_full,
-                    'size_bytes': s_data['size'],
-                    'size_str': fmt_size(s_data['size']),
-                    'reason': 'Modified'
+                    'src_path': d_data['full'],
+                    'dest_path': s_full,
+                    'size_bytes': d_data['size'],
+                    'size_str': fmt_size(d_data['size']),
+                    'reason': 'Missing in Source',
+                    'direction': 'dst_to_src'
                 })
+
     return diffs
 
 
-def sync_files(diffs, args):
+def sync_files(diffs, args, src_map=None, dst_map=None):
     """Perform the actual file sync."""
     import shutil
     from smart_sync.core.platform_win import ensure_extended_path, safe_chmod_write
@@ -124,6 +183,7 @@ def sync_files(diffs, args):
     copied = 0
     errors = 0
     skipped = 0
+    orphans_deleted = 0
     total_bytes = 0
     start_time = time.time()
     total = len(diffs)
@@ -133,10 +193,12 @@ def sync_files(diffs, args):
         src = diff['src_path']
         dst = diff['dest_path']
         size = diff['size_bytes']
+        direction = diff.get('direction', 'src_to_dst')
+        dir_tag = " (Dest→Source)" if direction == 'dst_to_src' else ""
         
         if args.dry_run:
             if not args.quiet:
-                print(f"  [{i}/{total}] Would copy: {rel} ({diff['size_str']})")
+                print(f"  [{i}/{total}] Would copy{dir_tag}: {rel} ({diff['size_str']}) [{diff['reason']}]")
             skipped += 1
             continue
         
@@ -165,7 +227,7 @@ def sync_files(diffs, args):
                 elapsed = time.time() - start_time
                 speed = total_bytes / max(0.01, elapsed)
                 pct = int(i / total * 100)
-                print(f"  [{pct:3d}%] Copied: {rel} ({diff['size_str']}) — {fmt_speed(speed)}")
+                print(f"  [{pct:3d}%] Copied{dir_tag}: {rel} ({diff['size_str']}) — {fmt_speed(speed)}")
                 
         except PermissionError:
             print(f"  [ERROR] Permission denied: {rel}")
@@ -174,10 +236,24 @@ def sync_files(diffs, args):
             print(f"  [ERROR] {rel}: {e}")
             errors += 1
     
-    # Mirror mode: delete orphans
-    if args.mode == 'mirror' and not args.dry_run:
-        print("\n  Mirror mode: Checking for orphaned files...")
-        # Re-scan to find orphans (already have src_map from caller)
+    # Mirror mode: delete orphaned files from destination
+    if args.mode == 'mirror' and not args.dry_run and src_map is not None:
+        from smart_sync.core.scanner import fast_scandir
+        if not args.quiet:
+            print("\n  Mirror mode: Checking for orphaned files in destination...")
+        for rel, full, st in fast_scandir(args.dst, []):
+            if rel not in src_map:
+                try:
+                    safe_chmod_write(full)
+                    os.remove(ensure_extended_path(full))
+                    orphans_deleted += 1
+                    if not args.quiet:
+                        print(f"  [DELETED] Orphan: {rel}")
+                except Exception as e:
+                    print(f"  [ERROR] Failed to delete orphan {rel}: {e}")
+                    errors += 1
+        if not args.quiet and orphans_deleted > 0:
+            print(f"  Mirror mode: Removed {orphans_deleted} orphaned file(s).")
     
     return copied, errors, skipped, total_bytes, time.time() - start_time
 
@@ -210,22 +286,30 @@ def main():
     
     # Diff
     print("\n  Phase 2: Computing differences...")
-    diffs = compute_diffs(src_map, dst_map, args.dst)
+    diffs = compute_diffs(src_map, dst_map, args.dst, mode=args.mode, src_root=args.src)
     
     total_size = sum(d['size_bytes'] for d in diffs)
-    missing = sum(1 for d in diffs if d['reason'] == 'Missing')
-    modified = sum(1 for d in diffs if d['reason'] == 'Modified')
+    missing = sum(1 for d in diffs if 'Missing' in d['reason'])
+    modified = sum(1 for d in diffs if 'Missing' not in d['reason'])
     
-    print(f"  Found {len(diffs)} differences ({missing} missing, {modified} modified)")
+    print(f"  Found {len(diffs)} differences ({missing} missing, {modified} modified/directional)")
     print(f"  Total size to sync: {fmt_size(total_size)}")
     
     if not diffs:
-        print("\n  Everything is in sync! Nothing to do.")
-        sys.exit(0)
+        if args.mode == 'mirror' and not args.dry_run:
+            copied, errors, skipped, bytes_done, elapsed = sync_files(diffs, args, src_map, dst_map)
+            if errors == 0:
+                print("\n  Everything is in sync!")
+                sys.exit(0)
+            else:
+                sys.exit(1)
+        else:
+            print("\n  Everything is in sync! Nothing to do.")
+            sys.exit(0)
     
     # Sync
     print(f"\n  Phase 3: {'Preview' if args.dry_run else 'Syncing'} files...")
-    copied, errors, skipped, bytes_done, elapsed = sync_files(diffs, args)
+    copied, errors, skipped, bytes_done, elapsed = sync_files(diffs, args, src_map, dst_map)
     
     # Summary
     print(f"\n{'='*60}")

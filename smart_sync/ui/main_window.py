@@ -544,54 +544,42 @@ class SmartSyncApp(QMainWindow):
         cache.update_cache(self.folder_setup_page.card_src.input.text().strip(), src_map)
         cache.update_cache(self.folder_setup_page.card_dst.input.text().strip(), dst_map)
 
-        self.missing_files = missing
-        self.scan_results_page.set_results(missing, total_scan_count, missing_count, modified_count, 0)
-        self.nav_buttons[1].set_badge(len(missing))
+        sync_mode_idx = self.folder_setup_page.sync_mode_combo.currentIndex()
+        if sync_mode_idx == 2:  # Bidirectional
+            processed_items = []
+            for item in missing:
+                d = dict(item)
+                direction = d.get('direction', 'source_to_dest')
+                if direction in ('dest_to_source', 'dest_only'):
+                    # Swap paths so worker copies FROM dest TO source
+                    d['src_path'], d['dest_path'] = d['dest_path'], d['src_path']
+                    if direction == 'dest_only':
+                        d['reason'] = 'Missing in Source'
+                    else:
+                        d['reason'] = 'Destination Newer'
+                processed_items.append(d)
+            self.missing_files = processed_items
+        elif sync_mode_idx == 1:  # Mirror
+            # In Mirror mode, destination-only files are deleted as orphans at end of sync
+            self.missing_files = [m for m in missing if m.get('direction') != 'dest_only']
+        else:  # Copy Only
+            # Destination-only files are ignored in Copy mode
+            self.missing_files = [m for m in missing if m.get('direction') != 'dest_only']
+
+        self.scan_results_page.set_results(self.missing_files, total_scan_count, missing_count, modified_count, 0)
+        self.nav_buttons[1].set_badge(len(self.missing_files))
 
         self.dashboard_page.update_stats(total_scan_count, missing_count, modified_count, 0, 0)
         self.folder_setup_page.setup_steps_header.set_active_step(2)
         self.dashboard_page.workflow_tracker.set_active_step(2)
 
-        self.status_bar.showMessage(f"Scan complete: {len(missing)} items require sync.")
-        self._add_log(f"Scan completed: {len(missing)} differences found ({missing_count} missing, {modified_count} changed)", "success")
-
-        # Bidirectional mode: detect conflicts and prompt resolution
-        if self.folder_setup_page.sync_mode_combo.currentIndex() == 2:  # Bidirectional
-            from .dialogs.custom_dialogs import ConflictResolutionDialog
-            # Find files modified on BOTH sides (true conflicts)
-            src_text = self.folder_setup_page.card_src.input.text().strip()
-            dst_text = self.folder_setup_page.card_dst.input.text().strip()
-            conflicts = []
-            reverse_copies = []
-            for item in list(missing):
-                direction = item.get('direction', 'source_to_dest')
-                if direction == 'dest_to_source':
-                    # Destination is newer - in bidirectional, copy dest→src
-                    reverse_copies.append({
-                        'filename': item['filename'],
-                        'rel_path': item['rel_path'],
-                        'src_path': item['dest_path'],  # Swap! Copy FROM dest
-                        'dest_path': item['src_path'],  # Copy TO source
-                        'size_bytes': item['size_bytes'],
-                        'size_str': item['size_str'],
-                        'modified_str': item['modified_str'],
-                        'reason': 'Dest→Source',
-                        'direction': 'dest_to_source'
-                    })
-            
-            if reverse_copies:
-                self._add_log(f'Bidirectional: {len(reverse_copies)} files to copy dest→source', 'info')
-                # Add reverse copies to the missing_files list for sync
-                self.missing_files.extend(reverse_copies)
-                self.scan_results_page.set_results(
-                    self.missing_files, total_scan_count, missing_count, modified_count, 0
-                )
-                self.nav_buttons[1].set_badge(len(self.missing_files))
+        self.status_bar.showMessage(f"Scan complete: {len(self.missing_files)} items require sync.")
+        self._add_log(f"Scan completed: {len(self.missing_files)} differences found ({missing_count} missing, {modified_count} changed)", "success")
 
         self._on_nav_clicked(1)  # Switch to Scan Results
 
         if getattr(self, '_auto_sync_active', False):
-            if missing:
+            if self.missing_files:
                 self._on_sync_all()
             self._auto_sync_active = False
 
