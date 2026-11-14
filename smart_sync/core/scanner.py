@@ -65,7 +65,7 @@ def fast_folder_stats(dir_path: str, exclusions: list[str] | None = None, allowe
 
 class MetadataScanner(QThread):
     """Background thread to calculate directory statistics without blocking GUI"""
-    finished_signal = Signal(str, int, int, float) # (key, file_count, size_bytes, latest_mtime)
+    finished_signal = Signal(str, 'qint64', 'qint64', float) # (key, file_count, size_bytes, latest_mtime)
 
     def __init__(self, key: str, path: str, exclusions: list[str] | None = None, allowed_exts: set[str] | list[str] | None = None, parent: QObject | None = None) -> None:
         super().__init__(parent)

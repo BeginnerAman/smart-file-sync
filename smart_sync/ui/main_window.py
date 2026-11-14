@@ -462,6 +462,14 @@ class SmartSyncApp(QMainWindow):
         dst = self.folder_setup_page.card_dst.input.text().strip()
         if not src or not dst:
             return
+
+        if not os.path.isdir(dst):
+            try:
+                os.makedirs(dst, exist_ok=True)
+                self._add_log(f"Created destination directory: '{dst}'", "info")
+            except Exception as e:
+                self._add_log(f"Cannot create destination directory '{dst}': {e}", "error")
+                return
             
         self._auto_sync_active = True
         self._add_log("Auto-sync triggered.", "info")
@@ -503,6 +511,14 @@ class SmartSyncApp(QMainWindow):
         dst = self.folder_setup_page.card_dst.input.text().strip()
         if not src or not dst:
             return
+
+        if not os.path.isdir(dst):
+            try:
+                os.makedirs(dst, exist_ok=True)
+                self._add_log(f"Created destination directory: '{dst}'", "info")
+            except Exception as e:
+                self._add_log(f"Cannot create destination directory '{dst}': {e}", "error")
+                return
 
         self._add_log(f"Starting directory scan: '{src}' -> '{dst}'", "info")
         self.status_bar.showMessage("Scanning directories...")

@@ -194,11 +194,14 @@ class FolderSetupPage(QWidget):
             self.lbl_status_msg.setStyleSheet("color: #ef4444; font-size: 11px;")
             return
 
-        if not os.path.isdir(dst):
+        drive, _ = os.path.splitdrive(os.path.abspath(dst))
+        if drive and not os.path.exists(drive + os.sep):
             self.scan_btn.setEnabled(False)
-            self.lbl_status_msg.setText("Destination folder does not exist or is not accessible.")
+            self.lbl_status_msg.setText(f"Destination drive ({drive}) is not connected or accessible.")
             self.lbl_status_msg.setStyleSheet("color: #ef4444; font-size: 11px;")
             return
+
+        is_new_dst = not os.path.isdir(dst)
 
         abs_src = os.path.abspath(src).rstrip("\\/")
         abs_dst = os.path.abspath(dst).rstrip("\\/")
@@ -224,5 +227,9 @@ class FolderSetupPage(QWidget):
             return
 
         self.scan_btn.setEnabled(True)
-        self.lbl_status_msg.setText("✓ Folders validated. Launch scan to compute differences.")
-        self.lbl_status_msg.setStyleSheet("color: #10b981; font-size: 11px;")
+        if is_new_dst:
+            self.lbl_status_msg.setText("Destination folder will be created automatically on scan.")
+            self.lbl_status_msg.setStyleSheet("color: #3b82f6; font-size: 11px;")
+        else:
+            self.lbl_status_msg.setText("Folders validated. Launch scan to compute differences.")
+            self.lbl_status_msg.setStyleSheet("color: #10b981; font-size: 11px;")
