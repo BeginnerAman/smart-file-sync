@@ -388,6 +388,63 @@ a {
   margin-right: auto;
 }
 
+/* Real-World Benchmark Showcase */
+.benchmark-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-top: 28px;
+}
+
+.benchmark-card {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: all var(--transition-normal);
+}
+
+.benchmark-card:hover {
+  border-color: var(--border-focus);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-glow);
+}
+
+.benchmark-card.highlight {
+  border-color: rgba(56, 189, 248, 0.4);
+  background: linear-gradient(180deg, rgba(14, 165, 233, 0.08) 0%, rgba(13, 21, 39, 0.7) 100%);
+  box-shadow: 0 0 20px rgba(14, 165, 233, 0.15);
+}
+
+.benchmark-header {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  letter-spacing: 0.05em;
+}
+
+.benchmark-number {
+  font-family: var(--font-mono);
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--text-main);
+  line-height: 1.1;
+}
+
+.benchmark-number.accent {
+  color: var(--brand-cyan);
+}
+
+.benchmark-sub {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
 /* Delta Simulator Card */
 .delta-simulator-card {
   background-color: var(--bg-surface);

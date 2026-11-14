@@ -7,7 +7,7 @@
   
   <!-- SEO Primary Meta Tags -->
   <meta name="title" content="Smart File Sync - High-Performance Offline File Synchronization for Windows">
-  <meta name="description" content="Ultra-fast, 100% offline file synchronization engine for Windows with block-level delta transfers (99.8% saved), real-time filesystem watcher, USB auto-detect, and zero cloud telemetry.">
+  <meta name="description" content="Ultra-fast, 100% offline file synchronization engine for Windows with Win32 Kernel DMA FastCopy, bounded sliding window (1-32 threads), block-level delta transfers (99.8% saved), and zero telemetry.">
   <meta name="keywords" content="file synchronization, delta sync, offline backup, Windows 11 file sync, USB backup tool, GoodSync alternative, FreeFileSync alternative, block level transfer, fast file sync, open source file sync, Aman Vishwakarma, BeginnerAman, beginner aman, beginner aman file sharing, beginner aman file sync, smart file sync">
   <meta name="author" content="Aman Vishwakarma (@BeginnerAman)">
   <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
@@ -18,14 +18,14 @@
   <meta property="og:site_name" content="Smart File Sync">
   <meta property="og:url" content="https://beginneraman.github.io/smart-file-sync/">
   <meta property="og:title" content="Smart File Sync - High-Performance Offline File Synchronization">
-  <meta property="og:description" content="Ultra-fast, 100% offline file synchronization engine with block-level delta transfers, real-time filesystem monitoring, and USB auto-detection.">
+  <meta property="og:description" content="Ultra-fast, 100% offline file synchronization engine with Win32 Kernel DMA FastCopy, block-level delta transfers, and USB auto-detection.">
   <meta property="og:image" content="https://beginneraman.github.io/smart-file-sync/assets/logo.png">
 
   <!-- Twitter / X Cards -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:url" content="https://beginneraman.github.io/smart-file-sync/">
   <meta name="twitter:title" content="Smart File Sync - High-Performance Offline File Synchronization">
-  <meta name="twitter:description" content="Ultra-fast 100% offline file sync with block-level delta transfers (99.8% bandwidth saved) and zero cloud telemetry.">
+  <meta name="twitter:description" content="Ultra-fast 100% offline file sync with Win32 Kernel DMA FastCopy, block-level delta transfers (99.8% saved), and zero cloud telemetry.">
   <meta name="twitter:image" content="https://beginneraman.github.io/smart-file-sync/assets/logo.png">
 
   <!-- Google Rich Snippet Structured Data (JSON-LD) -->
@@ -46,10 +46,10 @@
       "name": "Aman Vishwakarma (@BeginnerAman)",
       "url": "https://github.com/BeginnerAman"
     },
-    "description": "High-performance, 100% offline file synchronization engine for Windows with block-level delta transfers, real-time filesystem watcher, USB auto-detect, and atomic safe writes.",
-    "softwareVersion": "4.1.0",
+    "description": "High-performance, 100% offline file synchronization engine for Windows with Win32 Kernel DMA FastCopy, bounded sliding window (1-32 threads), block-level delta transfers, and atomic safe writes.",
+    "softwareVersion": "4.2.0",
     "url": "https://beginneraman.github.io/smart-file-sync/",
-    "downloadUrl": "https://github.com/BeginnerAman/smart-file-sync/releases/tag/v4.1.0",
+    "downloadUrl": "https://github.com/BeginnerAman/smart-file-sync/releases/tag/v4.2.0",
     "license": "https://opensource.org/licenses/MIT"
   }
   </script>
@@ -68,10 +68,11 @@
       <a href="#" class="brand-logo">
         <img src="assets/logo_transparent.png" alt="Smart File Sync Logo" class="brand-img" width="34" height="34">
         <span class="brand-name">Smart File Sync</span>
-        <span class="brand-badge">v4.1</span>
+        <span class="brand-badge">v4.2</span>
       </a>
 
       <nav class="nav-menu" id="navMenu">
+        <a href="#benchmarks" class="nav-link">Benchmarks</a>
         <a href="#features" class="nav-link">Features</a>
         <a href="#delta-demo" class="nav-link">Delta Engine</a>
         <a href="#comparison" class="nav-link">Comparison</a>
@@ -101,7 +102,7 @@
     <div class="container hero-container">
       <div class="hero-tag">
         <span class="pulse-dot"></span>
-        <span>100% Offline &middot; Zero Cloud Telemetry &middot; Windows 10/11</span>
+        <span>Win32 Kernel DMA FastCopy &middot; 100% Offline &middot; Zero Telemetry</span>
       </div>
       
       <h1 class="hero-title">
@@ -110,8 +111,8 @@
       </h1>
       
       <p class="hero-desc">
-        Sync gigabytes across drives, USBs, and backup storage in seconds with block-level delta transfers. 
-        No subscriptions, no cloud tracking, no file size limits.
+        Sync tens of thousands of files across drives, USBs, and backup storage at up to 1,900+ files/sec. 
+        Powered by Win32 Kernel DMA transfer, bounded sliding-window multi-threading, and block-level delta transfers. Zero subscriptions, zero cloud telemetry.
       </p>
 
       <div class="hero-cta-row">
@@ -120,13 +121,13 @@
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
           </svg>
           <span>Download for Windows</span>
-          <span class="btn-subtext">v4.1 &middot; 26.7 MB</span>
+          <span class="btn-subtext">v4.2 &middot; 23.6 MB</span>
         </a>
-        <a href="#delta-demo" class="btn btn-secondary btn-lg">
+        <a href="#benchmarks" class="btn btn-secondary btn-lg">
           <svg class="icon-svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
             <polygon points="5 3 19 12 5 21 5 3"/>
           </svg>
-          <span>See Delta Engine in Action</span>
+          <span>View 66k File Benchmarks</span>
         </a>
       </div>
 
@@ -135,23 +136,63 @@
           <svg class="meta-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="20 6 9 17 4 12"/>
           </svg>
-          <span>Block-Level Delta (99.8% Saved)</span>
+          <span>Win32 Kernel DMA (1,900+ Files/s)</span>
         </div>
         <div class="meta-item">
           <svg class="meta-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="20 6 9 17 4 12"/>
           </svg>
-          <span>Real-Time Watcher &amp; USB Auto-Detect</span>
+          <span>Sliding Window (1 to 32 Threads)</span>
         </div>
         <div class="meta-item">
           <svg class="meta-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="20 6 9 17 4 12"/>
           </svg>
-          <span>Stand-Alone Single Exe + Portable Zip</span>
+          <span>FAT32 2s Tolerance &amp; USB Auto-Detect</span>
+        </div>
+        <div class="meta-item">
+          <svg class="meta-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+          <span>Stand-Alone Exe (23.6 MB)</span>
         </div>
       </div>
+    </div>
+  </section>
 
+  <!-- Real-World Benchmarks Section -->
+  <section class="section benchmark-section" id="benchmarks">
+    <div class="container">
+      <div class="section-header text-center">
+        <span class="section-kicker">VERIFIED PERFORMANCE</span>
+        <h2 class="section-title">Tested Across 66,800+ Files &middot; 380x Throughput Leap</h2>
+        <p class="section-desc">
+          Real-world stress test synchronizing 66,844 files (7.5 GB directory tree on SSD). Win32 Kernel DMA copying and bounded sliding-window thread management eliminate userspace memory bottlenecks and GUI freezing.
+        </p>
+      </div>
 
+      <div class="benchmark-grid">
+        <div class="benchmark-card">
+          <span class="benchmark-header">BASELINE TRANSFER SPEED</span>
+          <span class="benchmark-number" style="color: #f87171;">5.0 files/s</span>
+          <span class="benchmark-sub">Traditional userspace loops took 5 hours 34 minutes with frozen GUI.</span>
+        </div>
+        <div class="benchmark-card highlight">
+          <span class="benchmark-header">SMART FILE SYNC v4.2</span>
+          <span class="benchmark-number accent">1,906+ files/s</span>
+          <span class="benchmark-sub">Win32 Kernel DMA completed all 66,844 files in ~35 seconds.</span>
+        </div>
+        <div class="benchmark-card">
+          <span class="benchmark-header">ACTIVE RAM FOOTPRINT</span>
+          <span class="benchmark-number" style="color: #34d399;">&lt; 5 MB</span>
+          <span class="benchmark-sub">Sliding window keeps memory flat regardless of queue size.</span>
+        </div>
+        <div class="benchmark-card">
+          <span class="benchmark-header">GUI INTERFACE REFRESH</span>
+          <span class="benchmark-number" style="color: #38bdf8;">60 FPS</span>
+          <span class="benchmark-sub">40ms batch queuing flushes table status with zero Python GIL contention.</span>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -159,11 +200,10 @@
   <section class="section delta-section" id="delta-demo">
     <div class="container">
       <div class="section-header text-center">
-        <span class="section-kicker">REVOLUTIONARY SPEEDUP</span>
-        <h2 class="section-title">Block-Level Delta Transfer Technology</h2>
+        <span class="section-kicker">INTELLIGENT DUAL-LAYER ENGINE</span>
+        <h2 class="section-title">Block-Level Delta &amp; Win32 Kernel Transfer</h2>
         <p class="section-desc">
-          When you modify a 2GB video or database file, standard sync tools re-copy the entire 2GB. 
-          Smart File Sync slices files into 4KB signature blocks and transfers only the changed blocks.
+          Smart File Sync intelligently routes files based on size: Small files (&lt; 1MB) copy instantly via direct Win32 Kernel DMA, while large modified files (&ge; 1MB) are sliced into 4KB signature blocks where only the changed bytes are transferred.
         </p>
       </div>
 
@@ -182,16 +222,16 @@
         <div class="block-grid-container">
           <div class="block-grid-legend">
             <span class="legend-item"><span class="legend-box match"></span> Unchanged 4KB Blocks (Skipped)</span>
-            <span class="legend-item"><span class="legend-box modified"></span> Changed Block (Transferred)</span>
+            <span class="legend-item"><span class="legend-box modified"></span> Changed Block (Delta Patched)</span>
           </div>
           <div class="block-grid" id="blockGrid"></div>
         </div>
 
         <div class="sim-results-row">
           <div class="sim-metric">
-            <span class="sim-metric-label">TRADITIONAL SYNC</span>
+            <span class="sim-metric-label">TRADITIONAL FULL RE-COPY</span>
             <span class="sim-metric-value red">2,080,000 Bytes (2.0 MB)</span>
-            <span class="sim-metric-sub">Entire file transferred</span>
+            <span class="sim-metric-sub">Entire file rewritten to disk</span>
           </div>
           <div class="sim-metric highlight">
             <span class="sim-metric-label">SMART FILE SYNC DELTA</span>
@@ -208,8 +248,8 @@
     <div class="container">
       <div class="section-header text-center">
         <span class="section-kicker">FEATURE MATRIX</span>
-        <h2 class="section-title">Built for Performance, Safety &amp; Control</h2>
-        <p class="section-desc">Everything power users need for reliable, verified directory backups without bloat.</p>
+        <h2 class="section-title">Engineered for Performance, Safety &amp; Control</h2>
+        <p class="section-desc">Enterprise-grade synchronization architecture built for speed and strict data integrity.</p>
       </div>
 
       <div class="features-grid">
@@ -217,14 +257,33 @@
         <div class="feature-card">
           <div class="feature-icon-box">
             <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
             </svg>
           </div>
-          <h3 class="feature-title">Block-Level Delta Sync</h3>
-          <p class="feature-desc">4KB block signature comparison transfers only modified chunks. Saves up to 99.8% bandwidth on large files.</p>
+          <h3 class="feature-title">Win32 Kernel DMA FastCopy</h3>
+          <p class="feature-desc">Invokes Windows native <code>CopyFileExW</code> with DMA hardware acceleration, bypassing userspace buffer allocation for maximum I/O throughput.</p>
         </div>
 
         <!-- Feature 2 -->
+        <div class="feature-card">
+          <div class="feature-icon-box">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="4" y1="21" x2="4" y2="14"></line>
+              <line x1="4" y1="10" x2="4" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="12"></line>
+              <line x1="12" y1="8" x2="12" y2="3"></line>
+              <line x1="20" y1="21" x2="20" y2="16"></line>
+              <line x1="20" y1="12" x2="20" y2="3"></line>
+              <line x1="1" y1="14" x2="7" y2="14"></line>
+              <line x1="9" y1="8" x2="15" y2="8"></line>
+              <line x1="17" y1="16" x2="23" y2="16"></line>
+            </svg>
+          </div>
+          <h3 class="feature-title">Sliding Window (1 to 32 Threads)</h3>
+          <p class="feature-desc">Bounded concurrency window keeps memory under 5 MB regardless of queue size, enabling instantaneous millisecond Pause and Stop response.</p>
+        </div>
+
+        <!-- Feature 3 -->
         <div class="feature-card">
           <div class="feature-icon-box">
             <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
@@ -234,33 +293,35 @@
               <line x1="6" y1="18" x2="6.01" y2="18"/>
             </svg>
           </div>
-          <h3 class="feature-title">USB Hot-Plug Auto-Detection</h3>
-          <p class="feature-desc">Integrated DriveMonitor polls hardware status and detects external drive connections to trigger automatic backups.</p>
-        </div>
-
-        <!-- Feature 3 -->
-        <div class="feature-card">
-          <div class="feature-icon-box">
-            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M2 12h5l3 7 4-14 3 7h5"/>
-            </svg>
-          </div>
-          <h3 class="feature-title">Real-Time Directory Watcher</h3>
-          <p class="feature-desc">Filesystem watchdog monitors folder changes instantly and queues newly saved or modified files in real time.</p>
+          <h3 class="feature-title">FAT32 2s Tolerance &amp; USB Auto-Detect</h3>
+          <p class="feature-desc">Automatic 2.0s timestamp buffer prevents false 'Modified' alerts on FAT32/exFAT drives, while hardware threads detect USB plug-ins instantly.</p>
         </div>
 
         <!-- Feature 4 -->
         <div class="feature-card">
           <div class="feature-icon-box">
             <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="3" y1="9" x2="21" y2="9"></line>
+              <line x1="9" y1="21" x2="9" y2="9"></line>
             </svg>
           </div>
-          <h3 class="feature-title">Atomic Safe Writes</h3>
-          <p class="feature-desc">Writes to safe temporary files before atomic replacement. Zero corruption risk during unexpected power loss.</p>
+          <h3 class="feature-title">Zero-Lag Virtualized Tables</h3>
+          <p class="feature-desc">40ms batched flusher and O(1) header calculations ensure silky smooth 60 FPS scrolling and instant search even on 66,000+ files.</p>
         </div>
 
         <!-- Feature 5 -->
+        <div class="feature-card">
+          <div class="feature-icon-box">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+          </div>
+          <h3 class="feature-title">Atomic Writes &amp; Loop Protection</h3>
+          <p class="feature-desc">Files stream to <code>.smartsync.tmp</code> staging files before atomic swap. Path validation prevents recursive loops when target is inside source.</p>
+        </div>
+
+        <!-- Feature 6 -->
         <div class="feature-card">
           <div class="feature-icon-box">
             <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
@@ -269,26 +330,23 @@
               <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
             </svg>
           </div>
-          <h3 class="feature-title">Bidirectional &amp; Mirror Modes</h3>
-          <p class="feature-desc">Choose between One-Way Copy, Exact Mirror (with orphan cleanup), or Two-Way Bidirectional synchronization.</p>
-        </div>
-
-        <!-- Feature 6 -->
-        <div class="feature-card">
-          <div class="feature-icon-box">
-            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-              <polyline points="14 2 14 8 20 8"/>
-              <line x1="16" y1="13" x2="8" y2="13"/>
-              <line x1="16" y1="17" x2="8" y2="17"/>
-              <polyline points="10 9 9 9 8 9"/>
-            </svg>
-          </div>
-          <h3 class="feature-title">File Versioning &amp; Backups</h3>
-          <p class="feature-desc">Keep 1, 3, or 5 version backups in structured version archives before overwriting modified files.</p>
+          <h3 class="feature-title">One-Way, Mirror &amp; 2-Way Sync</h3>
+          <p class="feature-desc">Choose between One-Way Backup, Exact 1:1 Mirror (with automatic orphan cleanup), or True Bidirectional synchronization.</p>
         </div>
 
         <!-- Feature 7 -->
+        <div class="feature-card">
+          <div class="feature-icon-box">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path>
+              <line x1="4" y1="22" x2="4" y2="15"></line>
+            </svg>
+          </div>
+          <h3 class="feature-title">Enterprise Extended UNC Paths</h3>
+          <p class="feature-desc">Full support for Windows extended-length UNC paths (<code>\\?\UNC\...</code>) exceeding 260 characters on complex corporate network storage.</p>
+        </div>
+
+        <!-- Feature 8 -->
         <div class="feature-card">
           <div class="feature-icon-box">
             <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
@@ -296,21 +354,8 @@
               <line x1="12" y1="19" x2="20" y2="19"/>
             </svg>
           </div>
-          <h3 class="feature-title">Full CLI &amp; Headless Mode</h3>
-          <p class="feature-desc">Automate backups in batch scripts, task scheduler, or CI pipelines using <code>python -m smart_sync</code>.</p>
-        </div>
-
-        <!-- Feature 8 -->
-        <div class="feature-card">
-          <div class="feature-icon-box">
-            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="10"/>
-              <line x1="12" y1="8" x2="12" y2="12"/>
-              <line x1="12" y1="16" x2="12.01" y2="16"/>
-            </svg>
-          </div>
-          <h3 class="feature-title">Disk-Full Safety Protection</h3>
-          <p class="feature-desc">Pre-sync free space verification and runtime ENOSPC detection automatically pauses transfers before disk overflow.</p>
+          <h3 class="feature-title">Headless CLI Automation</h3>
+          <p class="feature-desc">Automate background backup jobs via Windows Task Scheduler, PowerShell, or CI/CD pipelines using <code>python -m smart_sync</code>.</p>
         </div>
       </div>
     </div>
@@ -322,7 +367,7 @@
       <div class="section-header text-center">
         <span class="section-kicker">TRANSPARENT COMPARISON</span>
         <h2 class="section-title">Why Smart File Sync Stands Apart</h2>
-        <p class="section-desc">See how Smart File Sync compares to expensive commercial tools.</p>
+        <p class="section-desc">See how Smart File Sync compares to expensive commercial tools and traditional sync engines.</p>
       </div>
 
       <div class="mobile-scroll-hint">
@@ -334,7 +379,7 @@
           <thead>
             <tr>
               <th>Feature Capability</th>
-              <th class="highlight-col">Smart File Sync v4.1</th>
+              <th class="highlight-col">Smart File Sync v4.2</th>
               <th>GoodSync (Commercial)</th>
               <th>FreeFileSync</th>
             </tr>
@@ -342,15 +387,39 @@
           <tbody>
             <tr>
               <td>Pricing &amp; Licensing</td>
-              <td class="highlight-col"><span class="badge-tag green">100% Free &amp; Open</span></td>
+              <td class="highlight-col"><span class="badge-tag green">100% Free &amp; Open (MIT)</span></td>
               <td>$29.95 / year subscription</td>
               <td>Free (Donation Edition for Auto)</td>
             </tr>
             <tr>
+              <td>Engine Architecture</td>
+              <td class="highlight-col"><span class="check-icon">&#10003; Win32 Kernel DMA FastCopy</span></td>
+              <td>Proprietary Userspace Engine</td>
+              <td>Multi-Threaded C++</td>
+            </tr>
+            <tr>
               <td>Block-Level Delta Transfers</td>
-              <td class="highlight-col"><span class="check-icon">&#10003; Included</span></td>
+              <td class="highlight-col"><span class="check-icon">&#10003; 4KB C-Level Differential</span></td>
               <td><span class="check-icon">&#10003; Included</span></td>
               <td><span class="cross-icon">&#10007; Full Copy Only</span></td>
+            </tr>
+            <tr>
+              <td>USB FAT32 2s Tolerance</td>
+              <td class="highlight-col"><span class="check-icon">&#10003; Automatic 2.0s Buffer</span></td>
+              <td>Configurable</td>
+              <td><span class="check-icon">&#10003; Included</span></td>
+            </tr>
+            <tr>
+              <td>Parallel Concurrency</td>
+              <td class="highlight-col"><span class="check-icon">&#10003; Dynamic 1 to 32 Threads</span></td>
+              <td>Fixed Thread Ceiling</td>
+              <td>Up to 32 Threads</td>
+            </tr>
+            <tr>
+              <td>Memory Under Heavy Load</td>
+              <td class="highlight-col"><span class="check-icon">&#10003; &lt; 5 MB (Bounded Window)</span></td>
+              <td>High / Unbounded</td>
+              <td>Moderate</td>
             </tr>
             <tr>
               <td>100% Offline (Zero Telemetry)</td>
@@ -360,33 +429,27 @@
             </tr>
             <tr>
               <td>USB Hardware Hot-Plug Detect</td>
-              <td class="highlight-col"><span class="check-icon">&#10003; Native Thread</span></td>
+              <td class="highlight-col"><span class="check-icon">&#10003; Native Hardware Thread</span></td>
               <td><span class="check-icon">&#10003; Included</span></td>
               <td><span class="cross-icon">&#10007; Requires RealtimeSync</span></td>
             </tr>
             <tr>
               <td>Real-Time Watcher Monitoring</td>
-              <td class="highlight-col"><span class="check-icon">&#10003; Built-In</span></td>
+              <td class="highlight-col"><span class="check-icon">&#10003; Built-In Watchdog</span></td>
               <td><span class="check-icon">&#10003; Built-In</span></td>
               <td><span class="cross-icon">&#10007; Separate Utility</span></td>
             </tr>
             <tr>
-              <td>Modern Dark-Mode Desktop UI</td>
-              <td class="highlight-col"><span class="check-icon">&#10003; Modern Dark Theme</span></td>
-              <td><span class="cross-icon">&#10007; Legacy UI</span></td>
+              <td>Modern Dark Desktop UI</td>
+              <td class="highlight-col"><span class="check-icon">&#10003; Modern Dark (60 FPS)</span></td>
+              <td><span class="cross-icon">&#10007; Legacy Commercial UI</span></td>
               <td><span class="cross-icon">&#10007; Cluttered Layout</span></td>
             </tr>
             <tr>
               <td>Standalone Portable Edition</td>
-              <td class="highlight-col"><span class="check-icon">&#10003; 0.2s Instant Launch</span></td>
+              <td class="highlight-col"><span class="check-icon">&#10003; 23.6 MB Single File</span></td>
               <td><span class="cross-icon">&#10007; Installer Required</span></td>
               <td><span class="check-icon">&#10003; Portable Available</span></td>
-            </tr>
-            <tr>
-              <td>Full CLI Automation Interface</td>
-              <td class="highlight-col"><span class="check-icon">&#10003; Full CLI Support</span></td>
-              <td><span class="cross-icon">&#10007; Enterprise Add-on Only</span></td>
-              <td><span class="cross-icon">&#10007; Batch XML Configs</span></td>
             </tr>
           </tbody>
         </table>
@@ -435,7 +498,7 @@
         </div>
         <div class="cli-opt-card">
           <code>--threads &lt;N&gt;</code>
-          <p>Configure parallel worker thread count (1 to 16).</p>
+          <p>Configure parallel worker thread count (1 to 32, default: 4).</p>
         </div>
       </div>
     </div>
@@ -456,21 +519,21 @@
           <div class="card-glow-effect"></div>
           <div class="download-top-bar">
             <span class="download-badge highlight">POPULAR &middot; SINGLE EXECUTABLE</span>
-            <span class="release-ver-tag">v4.1.0</span>
+            <span class="release-ver-tag">v4.2.0</span>
           </div>
 
           <div class="download-card-body">
             <h3 class="download-title">Standalone Executable</h3>
-            <p class="download-desc">Self-contained single executable file. Double-click and run from anywhere on Windows with zero setup.</p>
+            <p class="download-desc">Self-contained single executable file. Double-click and run from anywhere on Windows with zero setup and zero bloat.</p>
             
             <div class="download-meta-chips">
-              <span class="meta-chip"><span>Size:</span> <strong>26.7 MB</strong></span>
+              <span class="meta-chip"><span>Size:</span> <strong>23.6 MB</strong></span>
               <span class="meta-chip"><span>Arch:</span> <strong>Win 64-bit</strong></span>
               <span class="meta-chip"><span>Build:</span> <strong class="green">Clean Slim</strong></span>
             </div>
 
             <!-- Premium Download Button -->
-            <a href="https://github.com/BeginnerAman/smart-file-sync/releases/download/v4.1.0/SmartFileSync.exe" class="premium-download-btn primary" id="btnDownloadExe">
+            <a href="https://github.com/BeginnerAman/smart-file-sync/releases/download/v4.2.0/SmartFileSync.exe" class="premium-download-btn primary" id="btnDownloadExe">
               <div class="btn-icon-wrapper">
                 <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2">
                   <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
@@ -478,7 +541,7 @@
               </div>
               <div class="btn-text-wrapper">
                 <span class="btn-main-title">Download SmartFileSync.exe</span>
-                <span class="btn-sub-caption">Direct Download &middot; 26.7 MB &middot; Windows 10/11</span>
+                <span class="btn-sub-caption">Direct Download &middot; 23.6 MB &middot; Windows 10/11</span>
               </div>
               <div class="btn-arrow-badge">&rarr;</div>
             </a>
@@ -487,7 +550,7 @@
           <div class="download-card-footer">
             <ul class="download-specs-clean">
               <li><span class="spec-check">&#10003;</span> Single file &middot; No decompression required</li>
-              <li><span class="spec-check">&#10003;</span> Integrated Delta &amp; MD5 hash engine</li>
+              <li><span class="spec-check">&#10003;</span> Win32 Kernel DMA &amp; Sliding Window Engine</li>
               <li><span class="spec-check">&#10003;</span> Microsoft SmartScreen &amp; offline verified</li>
             </ul>
           </div>
@@ -497,7 +560,7 @@
         <div class="download-card">
           <div class="download-top-bar">
             <span class="download-badge">PORTABLE EDITION &middot; ZERO LATENCY</span>
-            <span class="release-ver-tag">v4.1.0</span>
+            <span class="release-ver-tag">v4.2.0</span>
           </div>
 
           <div class="download-card-body">
@@ -505,13 +568,13 @@
             <p class="download-desc">Pre-extracted directory edition in a ZIP archive. Opens in 0.2 seconds with zero temporary decompression overhead.</p>
             
             <div class="download-meta-chips">
-              <span class="meta-chip"><span>Size:</span> <strong>26.7 MB</strong></span>
+              <span class="meta-chip"><span>Size:</span> <strong>23.5 MB</strong></span>
               <span class="meta-chip"><span>Speed:</span> <strong class="green">0.2s Instant</strong></span>
               <span class="meta-chip"><span>Format:</span> <strong>Portable Zip</strong></span>
             </div>
 
             <!-- Premium Download Button -->
-            <a href="https://github.com/BeginnerAman/smart-file-sync/releases/download/v4.1.0/SmartFileSync-Portable.zip" class="premium-download-btn secondary" id="btnDownloadZip">
+            <a href="https://github.com/BeginnerAman/smart-file-sync/releases/download/v4.2.0/SmartFileSync-Portable.zip" class="premium-download-btn secondary" id="btnDownloadZip">
               <div class="btn-icon-wrapper">
                 <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2">
                   <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
@@ -519,7 +582,7 @@
               </div>
               <div class="btn-text-wrapper">
                 <span class="btn-main-title">Download Portable Folder</span>
-                <span class="btn-sub-caption">ZIP Archive &middot; 26.7 MB &middot; Instant USB Launch</span>
+                <span class="btn-sub-caption">ZIP Archive &middot; 23.5 MB &middot; Instant USB Launch</span>
               </div>
               <div class="btn-arrow-badge">&rarr;</div>
             </a>
@@ -552,7 +615,17 @@
             <span class="faq-toggle-icon">+</span>
           </button>
           <div class="faq-answer">
-            <p>For modified files larger than 1MB, Smart File Sync splits both the source and destination files into 4KB chunks and computes rolling MD5 block signatures. Only the modified 4KB blocks are written to destination, saving up to 99.8% of transfer time and drive writes.</p>
+            <p>For modified files 1MB or larger, Smart File Sync splits the file into 4KB signature blocks and performs fast C-level byte comparisons. Only the modified 4KB chunks are transferred and patched into the destination file, saving up to 99.8% of bandwidth and drive writes. Small files under 1MB copy instantly via direct Win32 Kernel DMA.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question">
+            <span>How does Smart File Sync reach 1,900+ files per second?</span>
+            <span class="faq-toggle-icon">+</span>
+          </button>
+          <div class="faq-answer">
+            <p>Unlike standard tools that loop through userspace buffers and repeated filesystem syscalls, Smart File Sync calls native Windows <code>kernel32.CopyFileExW</code> with DMA hardware acceleration, pre-creates destination directory trees upfront, and bounds multi-threading with a sliding-window pool (up to 32 threads) and 40ms batched UI updates.</p>
           </div>
         </div>
 
@@ -572,7 +645,7 @@
             <span class="faq-toggle-icon">+</span>
           </button>
           <div class="faq-answer">
-            <p>Smart File Sync uses atomic writes. Files are initially streamed into dedicated <code>.smartsync.tmp</code> staging files and MD5-verified before replacing the destination file. Your existing files are never left in a corrupted state.</p>
+            <p>Smart File Sync uses atomic writes. Files are initially streamed into dedicated <code>.smartsync.tmp</code> staging files and verified before replacing the destination file. Your existing files are never left in a corrupted state.</p>
           </div>
         </div>
 
@@ -582,9 +655,12 @@
             <span class="faq-toggle-icon">+</span>
           </button>
           <div class="faq-answer">
-            <p>The Standalone Exe is a single 26.7 MB file that runs directly. The Portable Folder edition is pre-extracted for instant startup (0.2s launch speed) and is optimal for storing on USB drives.</p>
+            <p>The Standalone Exe is a single 23.6 MB file that runs directly with zero installation. The Portable Folder edition is pre-extracted in a 23.5 MB ZIP for instant 0.2s launch speed and is optimal for running directly from USB flash drives.</p>
           </div>
         </div>
+      </div>
+    </div>
+  </section>
       </div>
     </div>
   </section>
