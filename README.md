@@ -186,7 +186,7 @@ When synchronizing large modified files (such as virtual machine disks, database
 | **Pricing & License** | **100% Free & Open Source (MIT)** | $29.95 / year subscription | Free (Donation for auto) | Free (Windows Built-in) | $24.95 One-Time Purchase |
 | **Engine Architecture** | **Win32 Kernel DMA FastCopy** | Userspace Engine | Multi-Threaded C++ | Win32 CLI Native | Custom Buffer Engine |
 | **Block-Level Delta (4KB)** | **Included (C-Level Diff)** | Included | No (Full file re-copy) | No (Full file re-copy) | No (Full file re-copy) |
-| **Throughput (66k files)** | **1,906+ files/sec (~35s)** | ~400 files/sec (~2.8 hrs) | ~650 files/sec (~1.7 hrs) | ~1,200 files/sec (~55s) | ~500 files/sec (~2.2 hrs) |
+| **Throughput (66k files)** | **1,906+ files/sec (~35s)** | ~400 files/sec (~2.8 mins) | ~650 files/sec (~1.7 mins) | ~1,200 files/sec (~55s) | ~500 files/sec (~2.2 mins) |
 | **USB FAT32 2s Tolerance** | **Automatic 2.0s Buffer** | Configurable | Included | Manual (/FFT flag) | Triggers Re-copies |
 | **USB Hardware Auto-Detect** | **Integrated Hardware Thread** | Included | Requires RealtimeSync | None | None |
 | **Real-Time Watcher** | **Integrated Watchdog** | Included | Requires RealtimeSync | Limited (/MON switch) | None |
