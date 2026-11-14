@@ -135,7 +135,7 @@ class SmartSyncApp(QMainWindow):
         self.sidebar_collapsed = self.settings.value("sidebar_collapsed", False, type=bool)
         self.excl_exts = list(DEFAULT_EXCLUSIONS)
         self.total_cores = os.cpu_count() or 4
-        self.thread_count = min(32, int(self.settings.value("threads", max(4, min(16, self.total_cores * 2)))))
+        self.thread_count = min(32, int(self.settings.value("threads", max(2, self.total_cores))))
 
         self.missing_files = []
         self.worker = SyncWorker(self)

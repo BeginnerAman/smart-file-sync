@@ -22,13 +22,14 @@ class PerformancePresetCard(QFrame):
         super().__init__(parent)
         self.setObjectName("preset_card")
         self.setCursor(Qt.PointingHandCursor)
+        self.setMinimumHeight(96)
         self.threads = threads
         self.mode_id = mode_id
         self._selected = False
 
         lay = QVBoxLayout(self)
         lay.setContentsMargins(14, 12, 14, 12)
-        lay.setSpacing(6)
+        lay.setSpacing(8)
 
         # Header Row: Icon + Title + Thread badge
         h = QHBoxLayout()
@@ -47,15 +48,16 @@ class PerformancePresetCard(QFrame):
         h.addStretch()
 
         self.badge_lbl = QLabel(f"{threads} Threads")
-        self.badge_lbl.setFont(QFont("Segoe UI", 8, QFont.Bold))
-        self.badge_lbl.setStyleSheet("color: #38bdf8; background: rgba(56, 189, 248, 0.12); padding: 2px 8px; border-radius: 10px;")
+        self.badge_lbl.setFont(QFont("Segoe UI", 9, QFont.Bold))
+        self.badge_lbl.setStyleSheet("color: #38bdf8; background: rgba(56, 189, 248, 0.12); padding: 3px 8px; border-radius: 6px; font-weight: bold;")
         h.addWidget(self.badge_lbl)
         lay.addLayout(h)
 
         self.desc_lbl = QLabel(desc)
         self.desc_lbl.setStyleSheet("color: #94a3b8; font-size: 11px;")
         self.desc_lbl.setWordWrap(True)
-        lay.addWidget(self.desc_lbl)
+        self.desc_lbl.setAlignment(Qt.AlignTop | Qt.AlignLeft)
+        lay.addWidget(self.desc_lbl, 1)
 
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
@@ -67,7 +69,7 @@ class PerformancePresetCard(QFrame):
         if selected:
             border = "#3b82f6" if dark_mode else "#2563eb"
             bg = "#1e293b" if dark_mode else "#e0f2fe"
-            self.setStyleSheet(f"#preset_card {{ background-color: {bg}; border: 2px solid {border}; border-radius: 10px; }}")
+            self.setStyleSheet(f"#preset_card {{ background-color: {bg}; border: 2px solid {border}; border-radius: 10px; min-height: 96px; }}")
         else:
             self.setStyleSheet("")
 
@@ -178,24 +180,24 @@ class SettingsPage(QWidget):
         pp_lay.addWidget(lbl_cpu)
 
         # 3 Smart Preset Cards (Tuned for high I/O throughput)
-        self.eco_threads = min(4, max(2, self.total_cores // 2))
-        self.balanced_threads = max(4, min(16, self.total_cores * 2))
-        self.turbo_threads = max(16, min(32, self.total_cores * 4))
+        self.eco_threads = max(1, self.total_cores // 2)
+        self.balanced_threads = max(2, self.total_cores)
+        self.turbo_threads = min(32, max(4, self.total_cores * 2))
 
         presets_lay = QHBoxLayout()
         presets_lay.setSpacing(10)
 
         self.card_eco = PerformancePresetCard(
             "eco", "Eco Mode", self.eco_threads,
-            "Quiet background sync • Battery and CPU saver", "leaf"
+            "Quiet background sync • Battery & CPU saver", "leaf"
         )
         self.card_bal = PerformancePresetCard(
             "balanced", "Balanced", self.balanced_threads,
-            "Recommended • Optimal speed & PC responsiveness", "check"
+            "Recommended • Optimal speed & responsiveness", "check"
         )
         self.card_turbo = PerformancePresetCard(
             "turbo", "Turbo Boost", self.turbo_threads,
-            "Maximum SSD/NVMe multi-threaded transfer speed", "zap"
+            "Maximum SSD/NVMe parallel transfer speed", "zap"
         )
 
         self.preset_cards = [self.card_eco, self.card_bal, self.card_turbo]

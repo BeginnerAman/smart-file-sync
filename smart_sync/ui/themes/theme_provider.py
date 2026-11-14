@@ -257,6 +257,7 @@ def get_theme_stylesheet(dark_mode: bool = True) -> str:
             background-color: #0f1422;
             border: 1px solid #1e293b;
             border-radius: 10px;
+            min-height: 96px;
         }
         QFrame#preset_card:hover {
             border-color: #334155;
@@ -651,6 +652,7 @@ def get_theme_stylesheet(dark_mode: bool = True) -> str:
             background-color: #f8fafc;
             border: 1px solid #e2e8f0;
             border-radius: 10px;
+            min-height: 96px;
         }
         QFrame#preset_card:hover {
             border-color: #cbd5e1;
