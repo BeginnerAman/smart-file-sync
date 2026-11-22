@@ -119,6 +119,14 @@
               "@type": "Answer",
               "text": "The Standalone Exe is a single 23.6 MB file that runs directly with zero installation. The Portable Folder edition is pre-extracted in a 23.5 MB ZIP for instant 0.2s launch speed and is optimal for running directly from USB flash drives."
             }
+          },
+          {
+            "@type": "Question",
+            "name": "What should I do if Windows Defender or SmartScreen blocks SmartFileSync.exe?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Open Windows Security > Virus & threat protection > Protection history. Click on the quarantined/blocked item, click Yes on the Windows prompt, click Actions, and select Restore (or Allow on device). Because Smart File Sync is newly released open-source software without corporate certificates, Defender's automated AI filter may occasionally show a false positive (!ml heuristic). The app is 100% offline, clean, and verified."
+            }
           }
         ]
       },
@@ -877,6 +885,34 @@
           </div>
         </div>
       </div>
+
+      <!-- Windows Defender & SmartScreen Notice Card -->
+      <div class="security-notice-card">
+        <div class="security-notice-header">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#38bdf8" stroke-width="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <polyline points="9 12 11 14 15 10"/>
+          </svg>
+          <span class="security-notice-title">Windows Defender or SmartScreen False Positive?</span>
+        </div>
+        <p class="security-notice-desc">
+          Smart File Sync is 100% free, open-source, and strictly offline with zero telemetry. Because newly released open-source Windows tools do not carry expensive commercial corporate certificates, Microsoft Defender or SmartScreen may occasionally trigger an automated false positive warning (e.g. <code>!ml</code> Machine Learning detection) or quarantine the file upon download.
+        </p>
+        <div class="security-steps-box">
+          <span class="security-steps-title">How to Restore or Allow Smart File Sync in Windows Security:</span>
+          <ol class="security-steps-list">
+            <li>Open the Windows Start Menu, search for <strong>Windows Security</strong>, and press Enter.</li>
+            <li>In the left sidebar, click <strong>Virus &amp; threat protection</strong>.</li>
+            <li>Under the <em>Current threats</em> section, click <strong>Protection history</strong>.</li>
+            <li>Click on the recent blocked item (labeled <em>Threat quarantined</em> or <em>Blocked</em>).</li>
+            <li>When the Windows User Account Control (UAC) prompt appears, click <strong>Yes</strong>.</li>
+            <li>Click the <strong>Actions</strong> button at the bottom and select <strong>Restore</strong> (or <strong>Allow on device</strong>).</li>
+          </ol>
+        </div>
+        <p class="security-notice-footer-note">
+          Once restored, <code>SmartFileSync.exe</code> will immediately reappear in your folder and run cleanly without further warnings.
+        </p>
+      </div>
     </div>
   </section>
 
@@ -936,6 +972,16 @@
           </button>
           <div class="faq-answer">
             <p>The Standalone Exe is a single 23.6 MB file that runs directly with zero installation. The Portable Folder edition is pre-extracted in a 23.5 MB ZIP for instant 0.2s launch speed and is optimal for running directly from USB flash drives.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question">
+            <span>What should I do if Windows Defender or SmartScreen blocks SmartFileSync.exe?</span>
+            <span class="faq-toggle-icon">+</span>
+          </button>
+          <div class="faq-answer">
+            <p>Smart File Sync is 100% clean and offline. Because new open-source software does not carry commercial corporate certificates, Defender's automated AI filter may occasionally flag an unsigned binary as a false positive (<code>!ml</code> heuristic). To restore it: Open <strong>Windows Security</strong> &rarr; <strong>Virus &amp; threat protection</strong> &rarr; <strong>Protection history</strong> &rarr; Click the blocked item &rarr; Click <strong>Actions</strong> &rarr; Select <strong>Restore</strong> (or <strong>Allow on device</strong>).</p>
           </div>
         </div>
       </div>

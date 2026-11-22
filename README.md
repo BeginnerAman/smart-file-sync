@@ -230,6 +230,22 @@ Download the verified standalone packages from the [GitHub Releases Page](https:
 * **Standalone Single Executable (`SmartFileSync.exe` - 23.6 MB):** Complete standalone executable with zero installation and zero bloat libraries. Double-click and run immediately.
 * **Instant Portable Distribution (`SmartFileSync-Portable.zip` - 23.5 MB):** Pre-extracted directory edition in a lightweight ZIP archive. Launches in 0.2 seconds with zero extraction overhead. Ideal for USB drives.
 
+### Windows Defender & SmartScreen Notice
+
+Smart File Sync is 100% free, open-source, and strictly offline with zero telemetry or tracking. Because newly released open-source Windows software does not carry expensive commercial code-signing certificates, Windows Defender or SmartScreen may occasionally flag it with an automated heuristic false positive (such as `!ml` Machine Learning detection) or quarantine the executable upon download.
+
+#### How to Restore or Allow Smart File Sync in Windows Security:
+If Windows Defender blocks or removes `SmartFileSync.exe` (or if you see `"Windows cannot find '...SmartFileSync.exe'"`):
+
+1. Open the Windows Start Menu, search for **Windows Security**, and press Enter.
+2. In the left menu, click **Virus & threat protection**.
+3. Under the *Current threats* section, click **Protection history**.
+4. Click on the most recent blocked item (labeled *Threat quarantined* or *Blocked*).
+5. When the Windows User Account Control (UAC) prompt appears, click **Yes**.
+6. Click the **Actions** button at the bottom and select **Restore** (or **Allow on device**).
+
+Once restored, `SmartFileSync.exe` will immediately reappear in your folder and run cleanly without further warnings.
+
 ### System Requirements
 * **Operating System:** Microsoft Windows 10 (64-bit) or Windows 11 (64-bit)
 * **Processor:** Any 64-bit x86/x64 compatible processor
